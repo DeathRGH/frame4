@@ -1,0 +1,257 @@
+#include "ksdk.h"
+
+uint64_t cachedKernelBase;
+
+void(*Xfast_syscall)(void);
+int(*copyin)(const void *uaddr, void *kaddr, uint64_t len);
+int(*copyout)(const void *kaddr, void *uaddr, uint64_t len);
+int(*printf)(const char *fmt, ... );
+int(*vprintf)(const char *fmt, va_list arg);
+void *(*malloc)(uint64_t size, void *type, int flags);
+void(*free)(void *addr, void *type);
+void *(*memcpy)(void *dest, const void *src, uint64_t num);
+void *(*memset)(void *ptr, int value, uint64_t num);
+int(*memcmp)(const void *ptr1, const void *ptr2, uint64_t num);
+void *(*kmem_alloc)(struct vm_map *map, uint64_t size);
+uint64_t(*strlen)(const char *str);
+char *(*strcpy)(char *dst, const char *src);
+char *(*strncmp)(char *dst, const char *src, uint64_t len);
+void(*pause)(const char *wmesg, int timo);
+int(*kthread_add)(void (*func)(void *), void *arg, struct proc *procp, struct thread **newtdpp, int flags, int pages, const char *fmt, ...);
+void(*kthread_exit)(void);
+void(*sched_prio)(struct thread *td, uint16_t prio);
+void(*sched_add)(struct thread *td, uint64_t cpuset);
+void(*kern_yield)(uint64_t p);
+int(*fill_regs)(struct thread *td, struct reg *rg);
+int(*set_regs)(struct thread *td, struct reg *rg);
+int(*create_thread)(struct thread *td, uint64_t ctx, void (*start_func)(void *), void *arg, char *stack_base, uint64_t stack_size, char *tls_base, long *child_tid, long *parent_tid, uint64_t flags, uint64_t rtp);
+int(*kproc_create)(void (*func)(void *), void *arg, struct proc **newpp, int flags, int pages, const char *fmt, ...);
+void(*kthread_set_affinity)(const char *tdname, uint64_t prio, uint64_t cpuset, uint64_t unknown);
+void(*kthread_suspend_check)(void);
+int(*kproc_kthread_add)(void (*func)(void *), void *arg, struct proc **procptr, struct thread **tdptr, int flags, int pages, char *procname, const char *fmt, ...);
+void(*sx_init_flags)(struct sx *sx, const char *description, int opts);
+void(*sx_xlock)(struct sx *sx);
+void(*sx_xunlock)(struct sx *sx);
+void(*mtx_init)(struct mtx *mutex, const char *name, const char *type, int opts);
+void(*mtx_lock_spin_flags)(struct mtx *mutex, int flags);
+void(*mtx_unlock_spin_flags)(struct mtx *mutex, int flags);
+void(*mtx_lock_sleep)(struct mtx *mutex, int flags);
+void(*mtx_unlock_sleep)(struct mtx *mutex, int flags);
+int(*kern_reboot)(int magic);
+void(*vm_map_lock_read)(struct vm_map *map);
+int(*vm_map_lookup_entry)(struct vm_map *map, uint64_t address, struct vm_map_entry **entries);
+void(*vm_map_unlock_read)(struct vm_map *map);
+struct vmspace *(*vmspace_acquire_ref)(struct proc *p);
+void(*vmspace_free)(struct vmspace *vm);
+int(*vm_map_delete)(struct vm_map *map, uint64_t start, uint64_t end);
+int(*vm_map_protect)(struct vm_map *map, uint64_t start, uint64_t end, int new_prot, uint64_t set_max);
+int(*vm_map_findspace)(struct vm_map *map, uint64_t start, uint64_t length, uint64_t *addr);
+int(*vm_map_insert)(struct vm_map *map, uint64_t object, uint64_t offset, uint64_t start, uint64_t end, int prot, int max, int cow);
+void(*vm_map_lock)(struct vm_map *map);
+void(*vm_map_unlock)(struct vm_map *map);
+int(*proc_rwmem)(struct proc *p, struct uio *uio);
+
+uint8_t *disable_console_output;
+void *M_TEMP;
+void **kernel_map;
+void **prison0;
+void **rootvnode;
+void **allproc;
+struct sysent *sysents;
+
+uint64_t get_kbase() {
+    uint32_t edx, eax;
+    __asm__ ("rdmsr" : "=d"(edx), "=a"(eax) : "c"(0xC0000082));
+    return ((((uint64_t)edx) << 32) | (uint64_t)eax) - __Xfast_syscall;
+}
+
+void init_505sdk(uint8_t *kbase) {
+    Xfast_syscall = (void *)(kbase + 0x1C0);
+    copyin = (void *)(kbase + 0x1EA710);
+    copyout = (void *)(kbase + 0x1EA630);
+    printf = (void *)(kbase + 0x436040);
+    vprintf = (void *)(kbase + 0x4360B0);
+    malloc = (void *)(kbase + 0x10E250);
+    free = (void *)(kbase + 0x10E460);
+    memcpy = (void *)(kbase + 0x1EA530);
+    memset = (void *)(kbase + 0x3205C0);
+    memcmp = (void *)(kbase + 0x50AC0);
+    kmem_alloc = (void *)(kbase + 0xFCC80);
+    strlen = (void *)(kbase + 0x3B71A0);
+    strcpy = (void *)(kbase + 0x8F250);
+    strncmp = (void *)(kbase + 0x1B8FE0);
+    pause = (void *)(kbase + 0x3FB920);
+    kthread_add = (void *)(kbase + 0x138360);
+    kthread_exit = (void *)(kbase + 0x138640);
+    sched_prio = (void *)(kbase + 0x31EE00);
+    sched_add = (void *)(kbase + 0x31F150);
+    kern_yield = (void *)(kbase + 0x3FBC40);
+    fill_regs = (void *)(kbase + 0x234BA0);
+    set_regs = (void *)(kbase + 0x234CD0);
+    create_thread = (void *)(kbase + 0x1BE1F0);
+    kproc_create = (void *)(kbase + 0x137DF0);
+    kthread_set_affinity = (void *)(kbase + 0x138CC0);
+    kthread_suspend_check = (void *)(kbase + 0x138A60);
+    kproc_kthread_add = (void *)(kbase + 0x138B70);
+    sx_init_flags = (void *)(kbase + 0xF5BB0);
+    sx_xlock = (void *)(kbase + 0xF5E10);
+    sx_xunlock = (void *)(kbase + 0xF5FD0);
+    mtx_init = (void *)(kbase + 0x402780);
+    mtx_lock_spin_flags = (void *)(kbase + 0x402100);
+    mtx_unlock_spin_flags = (void *)(kbase + 0x4022C0);
+    mtx_lock_sleep = (void *)(kbase + 0x401CD0);
+    mtx_unlock_sleep = (void *)(kbase + 0x401FA0);
+    kern_reboot = (void *)(kbase + 0x10D390);
+    vm_map_lock_read = (void *)(kbase + 0x19F140);
+    vm_map_lookup_entry = (void *)(kbase + 0x19F760);
+    vm_map_unlock_read = (void *)(kbase + 0x19F190);
+    vmspace_acquire_ref = (void *)(kbase + 0x19EF90);
+    vmspace_free = (void *)(kbase + 0x19EDC0);
+    vm_map_delete = (void *)(kbase + 0x1A19D0);
+    vm_map_protect = (void *)(kbase + 0x1A3A50);
+    vm_map_findspace = (void *)(kbase + 0x1A1F60);
+    vm_map_insert = (void *)(kbase + 0x1A0280);
+    vm_map_lock = (void *)(kbase + 0x19EFF0);
+    vm_map_unlock = (void *)(kbase + 0x19F060);
+    proc_rwmem = (void *)(kbase + 0x30D150);
+    disable_console_output = (void *)(kbase + 0x19ECEB0);
+    M_TEMP = (void *)(kbase + 0x14B4110);
+    kernel_map = (void *)(kbase + 0x1AC60E0);
+    prison0 = (void *)(kbase + 0x10986A0);
+    rootvnode = (void *)(kbase + 0x22C1A70);
+    allproc = (void *)(kbase + 0x2382FF8);
+    sysents = (void *)(kbase + 0x107C610);
+}
+
+void init_900sdk(uint8_t *kbase) {
+    Xfast_syscall = (void *)(kbase + 0x1C0);
+    copyin = (void *)(kbase + 0x2716A0);
+    copyout = (void *)(kbase + 0x2715B0);
+    printf = (void *)(kbase + 0xB7A30);
+    vprintf = (void *)(kbase + 0xB7AA0);
+    malloc = (void *)(kbase + 0x301B20);
+    free = (void *)(kbase + 0x301CE0);
+    memcpy = (void *)(kbase + 0x2714B0);
+    memset = (void *)(kbase + 0x1496C0);
+    memcmp = (void *)(kbase + 0x271E20);
+    kmem_alloc = (void *)(kbase + 0x37BE70);
+    strlen = (void *)(kbase + 0x30F450);
+    strcpy = (void *)(kbase + 0x189F80);
+    strncmp = (void *)(kbase + 0x124750);
+    pause = (void *)(kbase + 0x453EA0);
+    kthread_add = (void *)(kbase + 0x96F40);
+    kthread_exit = (void *)(kbase + 0x97230);
+    sched_prio = (void *)(kbase + 0x1CBB90);
+    sched_add = (void *)(kbase + 0x1CC690);
+    kern_yield = (void *)(kbase + 0x4541B0);
+    fill_regs = (void *)(kbase + 0x314870);
+    set_regs = (void *)(kbase + 0x3149A0);
+    create_thread = (void *)(kbase + 0x1ED670);
+    kproc_create = (void *)(kbase + 0x969E0);
+    kthread_set_affinity = (void *)(kbase + 0x978A0);
+    kthread_suspend_check = (void *)(kbase + 0x97640);
+    kproc_kthread_add = (void *)(kbase + 0x97750);
+    sx_init_flags = (void *)(kbase + 0x43E390);
+    sx_xlock = (void *)(kbase + 0x43E610);
+    sx_xunlock = (void *)(kbase + 0x43E7D0);
+    mtx_init = (void *)(kbase + 0x2EF960);
+    mtx_lock_spin_flags = (void *)(kbase + 0x2EF2D0);
+    mtx_unlock_spin_flags = (void *)(kbase + 0x2EF4A0);
+    mtx_lock_sleep = (void *)(kbase + 0x2EEEB0);
+    mtx_unlock_sleep = (void *)(kbase + 0x2EF170);
+    kern_reboot = (void *)(kbase + 0x29A380);
+    vm_map_lock_read = (void *)(kbase + 0x7BB80);
+    vm_map_lookup_entry = (void *)(kbase + 0x7C1C0);
+    vm_map_unlock_read = (void *)(kbase + 0x7BBD0);
+    vmspace_acquire_ref = (void *)(kbase + 0x7B9E0);
+    vmspace_free = (void *)(kbase + 0x7B810);
+    vm_map_delete = (void *)(kbase + 0x7E680);
+    vm_map_protect = (void *)(kbase + 0x809C0);
+    vm_map_findspace = (void *)(kbase + 0x7EC40);
+    vm_map_insert = (void *)(kbase + 0x7CD80);
+    vm_map_lock = (void *)(kbase + 0x7BA30);
+    vm_map_unlock = (void *)(kbase + 0x7BAA0);
+    proc_rwmem = (void *)(kbase + 0x41EB00);
+    disable_console_output = (void *)(kbase + 0x152BF60);
+    M_TEMP = (void *)(kbase + 0x15621E0);
+    kernel_map = (void *)(kbase + 0x2268D48);
+    prison0 = (void *)(kbase + 0x111F870);
+    rootvnode = (void *)(kbase + 0x21EFF20);
+    allproc = (void *)(kbase + 0x1B946E0);
+    sysents = (void *)(kbase + 0x1100310);
+}
+
+void init_1100sdk(uint8_t *kbase) {
+	Xfast_syscall = (void *)(kbase + 0x1C0);
+    copyin = (void *)(kbase + 0x2DDFE0);
+    copyout = (void *)(kbase + 0x2DDEF0);
+    printf = (void *)(kbase + 0x2FCBD0);
+    vprintf = (void *)(kbase + 0x2FCC40);
+    malloc = (void *)(kbase + 0x1A4220);
+    free = (void *)(kbase + 0x1A43E0);
+    memcpy = (void *)(kbase + 0x2DDDF0);
+    memset = (void *)(kbase + 0x482D0);
+    memcmp = (void *)(kbase + 0x948B0);
+    kmem_alloc = (void *)(kbase + 0x245E10);
+    strlen = (void *)(kbase + 0x21DC40);
+    strcpy = (void *)(kbase + 0x1AA590);
+    strncmp = (void *)(kbase + 0x313B10);
+    pause = (void *)(kbase + 0x3663E0);
+    kthread_add = (void *)(kbase + 0xC36A0);
+    kthread_exit = (void *)(kbase + 0xC3990);
+    sched_prio = (void *)(kbase + 0x2BA470);
+    sched_add = (void *)(kbase + 0x2BAF70);
+    kern_yield = (void *)(kbase + 0x3666F0);
+    fill_regs = (void *)(kbase + 0x25DB10);
+    set_regs = (void *)(kbase + 0x25DC40);
+    create_thread = (void *)(kbase + 0x295170);
+    kproc_create = (void *)(kbase + 0xC3140);
+    kthread_set_affinity = (void *)(kbase + 0xC4000);
+    kthread_suspend_check = (void *)(kbase + 0xC3DA0);
+    kproc_kthread_add = (void *)(kbase + 0xC3EB0);  
+    sx_init_flags = (void *)(kbase + 0xE2F80);
+    sx_xlock = (void *)(kbase + 0xE3200);
+    sx_xunlock = (void *)(kbase + 0xE33C0);
+    mtx_init = (void *)(kbase + 0x10F110);
+    mtx_lock_spin_flags = (void *)(kbase + 0x10EAB0);
+    mtx_unlock_spin_flags = (void *)(kbase + 0x10EC50);
+    mtx_lock_sleep = (void *)(kbase + 0x10E6A0);
+    mtx_unlock_sleep = (void *)(kbase + 0x10E950);
+    kern_reboot = (void *)(kbase + 0x198060);
+    vm_map_lock_read = (void *)(kbase + 0x3578B0);
+    vm_map_lookup_entry = (void *)(kbase + 0x357EF0);
+    vm_map_unlock_read = (void *)(kbase + 0x357900);  
+    vmspace_acquire_ref = (void *)(kbase + 0x357720);
+    vmspace_free = (void *)(kbase + 0x357550);
+    vm_map_delete = (void *)(kbase + 0x35A3B0);
+    vm_map_protect = (void *)(kbase + 0x35C710);  
+    vm_map_findspace = (void *)(kbase + 0x35A970);
+    vm_map_insert = (void *)(kbase + 0x358AB0);
+    vm_map_lock = (void *)(kbase + 0x357760);
+    vm_map_unlock = (void *)(kbase + 0x3577D0);
+    proc_rwmem = (void *)(kbase + 0x3838A0);
+    disable_console_output = (void *)(kbase + 0x152CFF8);
+    M_TEMP = (void *)(kbase + 0x15415B0);
+    kernel_map = (void *)(kbase + 0x21FF130);
+    prison0 = (void *)(kbase + 0x111F830);
+    rootvnode = (void *)(kbase + 0x2116640);
+    allproc = (void *)(kbase + 0x22D0A98);
+    sysents = (void *)(kbase + 0x1101760);
+}
+
+void init_ksdk() {
+    uint64_t kbase = get_kbase();
+	cachedKernelBase = kbase;
+    unsigned short firmwareVersion = kget_firmware_from_base(kbase);
+    switch(firmwareVersion) {
+        case 505:
+            init_505sdk((uint8_t *)kbase);
+            break;
+        case 900:
+            init_900sdk((uint8_t *)kbase);
+            break;
+		case 1100:
+            init_1100sdk((uint8_t *)kbase);
+            break;
+    }
+}

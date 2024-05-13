@@ -1,0 +1,12 @@
+*.rar
+*.zip
+*.bin
+debugger/build
+kdebugger/build
+installer/build
+ps4-ksdk/build
+ps4-payload-sdk/libPS4/build
+**/*.bin
+**/*.elf
+**/*.a
+.vscode
