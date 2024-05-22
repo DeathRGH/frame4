@@ -75,7 +75,7 @@ int sys_open_hook(struct thread *td, struct syscall_open *args) { // this entire
 	int retVal = _sys_stat(td, data->statData);
 
 	//if ((*(uint32_t *)((uint64_t)data->statData->sb + 0x08) & 0170000) != 0100000 || retVal != 0) // st_mode & 0170000 == 0100000 would be a file //... == 0040000 is a dir;
-	if ((*(uint32_t *)((uint64_t)data->statData->sb + 0x08) & 0040000) || retVal != 0) // #define S_IFDIR  0040000
+	if ((*(uint32_t *)((uint64_t)data->statData->sb + 0x08) & S_IFDIR) || retVal != 0)
 		goto original;
 
 	args->path = possible_path;
@@ -170,7 +170,7 @@ int sys_openat_hook(struct thread *td, struct syscall_openat *args) { // this en
 	int retVal = _sys_stat(td, data->statData_at);
 
 	//if ((*(uint32_t *)((uint64_t)data->statData_at->sb + 0x08) & 0170000) != 0100000 || retVal != 0) // st_mode & 0170000 == 0100000 would be a file //... == 0040000 is a dir;
-	if ((*(uint32_t *)((uint64_t)data->statData_at->sb + 0x08) & 0040000) || retVal != 0) // #define S_IFDIR  0040000
+	if ((*(uint32_t *)((uint64_t)data->statData_at->sb + 0x08) & S_IFDIR) || retVal != 0)
 		goto original;
 
 	args->path = possible_path;
@@ -201,120 +201,26 @@ int install_afr_hooks() {
 	printf("[Frame4] <AFR> loading application file redirector...\n");
 
 	struct hook_data *data = (struct hook_data *)rwx_alloc(sizeof(struct hook_data));
-	//printf("[Frame4] <AFR> hook_data alloc done\n");
 	data->statData = (struct syscall_stat *)rwx_alloc(sizeof(struct syscall_stat));
 	data->statData_at = (struct syscall_stat *)rwx_alloc(sizeof(struct syscall_stat));
-	//printf("[Frame4] <AFR> data->statData / data->statData_at alloc done\n");
 	data->cachedFw = cachedFirmware;
 	strcpy(data->data_path, "/user/data/");
 	strcpy(data->cusa, "CUSA");
 	strcpy(data->print_debug1, "[Frame4] <AFR> cred->cr_uid: %i, %s, %s (%i)\n");
 	strcpy(data->print_debug2, "[Frame4] <AFR> Redirected: %s (%i)\n");
 
-	//printf("[Frame4] <AFR> hook_data fully done\n");
 
 	void *hook_ptr = (void *)rwx_alloc(0x10000);
-	//printf("[Frame4] <AFR> hook_ptr alloc done\n");
 	memcpy(hook_ptr, sys_open_hook, 0x1000);
-	//printf("[Frame4] <AFR> hook_ptr memcpy done\n");
 
 	void *hook_ptr_at = (void *)rwx_alloc(0x10000);
-	//printf("[Frame4] <AFR> hook_ptr_at alloc done\n");
 	memcpy(hook_ptr_at, sys_openat_hook, 0x1000);
-	//printf("[Frame4] <AFR> hook_ptr_at memcpy done\n");
 
 	cpu_disable_wp();
 	*(uint64_t *)cachedKernelBase = (uint64_t)data;
 	sysents[5].sy_call = hook_ptr; // sys_open
 	sysents[499].sy_call = hook_ptr_at; // sys_openat
 	cpu_enable_wp();
-	//printf("[Frame4] <AFR> data ptr written to kernelbase\n");
-	//printf("[Frame4] <AFR> sysents[5].sy_call assigned\n");
-	//printf("[Frame4] <AFR> sysents[499].sy_call assigned\n");
-	
-	struct proc *p;
-	p = proc_find_by_name("SceShellCore");
-	if(!p) {
-		printf("[Frame4] <AFR> could not find SceShellCore process!\n");
-		return 1;
-	}
-
-	printf("[Frame4] <AFR> SceShellCore found, pid = %i\n", p->pid);
-
-	struct vmspace *vm;
-	struct vm_map *map;
-	struct vm_map_entry *entry;
-	struct sys_proc_vm_map_args args;
-
-	memset(&args, NULL, sizeof(struct sys_proc_vm_map_args));
-
-	vm = p->p_vmspace;
-	map = &vm->vm_map;
-	args.num = map->nentries;
-
-	uint64_t size = args.num * sizeof(struct proc_vm_map_entry);
-	args.maps = (struct proc_vm_map_entry *)malloc(size, M_TEMP, 2);
-
-	vm_map_lock_read(map);
-    
-	if (vm_map_lookup_entry(map, NULL, &entry)) {
-		vm_map_unlock_read(map);
-		return 1;
-	}
-
-	for (int i = 0; i < args.num; i++) {
-		args.maps[i].start = entry->start;
-		args.maps[i].end = entry->end;
-		args.maps[i].offset = entry->offset;
-		args.maps[i].prot = entry->prot & (entry->prot >> 8);
-		memcpy(args.maps[i].name, entry->name, sizeof(args.maps[i].name));
-            
-		if (!(entry = entry->next)) {
-			break;
-		}
-	}
-
-	vm_map_unlock_read(map);
-	
-	uint8_t always_jump = 0xEB;
-	uint64_t nop_slide = 0x9090909090909090;
-	uint64_t mountPatchOffset = 0;
-	uint64_t mountPatchOffset2 = 0;
-	uint64_t disableCoreDumpPatch = 0;
-
-	uint64_t fwCheckPatch = 0;
-
-	switch (cachedFirmware) {
-		case 505:
-			mountPatchOffset = 0x31CA2A;
-			fwCheckPatch = 0x3CCB79;
-			break;
-		case 900:
-			mountPatchOffset = 0x3232C8;
-			mountPatchOffset2 = 0x3232C0; // 9.00 specific check
-			fwCheckPatch = 0x3C5EA7;
-			disableCoreDumpPatch = 0x2EFC1B;
-			break;
-		case 1100:
-			mountPatchOffset = 0x3210C6;
-			mountPatchOffset2 = 0x3210BC; // 11.00 specific check
-			fwCheckPatch = 0x3C41A7;
-			disableCoreDumpPatch = 0x2ECF2B;
-			break;
-		default:
-			break;
-	}
-
-	// mount /user on any process sandbox with read/write perm
-	if (mountPatchOffset)
-		proc_rw_mem(p, (void *)(args.maps[1].start + mountPatchOffset), 6, &nop_slide, 0, 1);
-	if (mountPatchOffset2)
-		proc_rw_mem(p, (void *)(args.maps[1].start + mountPatchOffset2), 6, &nop_slide, 0, 1);
-	// other patches
-	if (fwCheckPatch)
-		proc_rw_mem(p, (void *)(args.maps[1].start + fwCheckPatch), 1, &always_jump, 0, 1);
-	if (disableCoreDumpPatch) // thanks to osm
-		proc_rw_mem(p, (void *)(args.maps[1].start + disableCoreDumpPatch), 5, (void *)"\x41\xC6\x45\x0C\x00", 0, 1); // mov byte ptr [r13 + 0x0C], 0
 
 	return 0;
 }

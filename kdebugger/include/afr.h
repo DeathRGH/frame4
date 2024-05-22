@@ -3,6 +3,8 @@
 
 #include <ksdk.h>
 
+#define S_IFDIR  0040000
+
 struct syscall_open {
 	const char *path;
 	int flags;

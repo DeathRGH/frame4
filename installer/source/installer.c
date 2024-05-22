@@ -1,4 +1,5 @@
 #include "installer.h"
+
 #include "syscall.h"
 
 extern uint8_t kernelelf[];
@@ -206,6 +207,95 @@ void patch_kernel() {
 	cpu_enable_wp();
 }
 
+int patch_shellcore() {
+	struct proc *p = proc_find_by_name("SceShellCore");
+	if(!p) {
+		printf("[Frame4] <patch_shellcore> could not find SceShellCore process!\n");
+		return 1;
+	}
+
+	printf("[Frame4] <patch_shellcore> SceShellCore found, pid = %i\n", p->pid);
+
+	struct vmspace *vm;
+	struct vm_map *map;
+	struct vm_map_entry *entry;
+	struct sys_proc_vm_map_args args;
+
+	memset(&args, NULL, sizeof(struct sys_proc_vm_map_args));
+
+	vm = p->p_vmspace;
+	map = &vm->vm_map;
+	args.num = map->nentries;
+
+	uint64_t size = args.num * sizeof(struct proc_vm_map_entry);
+	args.maps = (struct proc_vm_map_entry *)malloc(size, M_TEMP, 2);
+
+	vm_map_lock_read(map);
+    
+	if (vm_map_lookup_entry(map, NULL, &entry)) {
+		vm_map_unlock_read(map);
+		return 1;
+	}
+
+	for (int i = 0; i < args.num; i++) {
+		args.maps[i].start = entry->start;
+		args.maps[i].end = entry->end;
+		args.maps[i].offset = entry->offset;
+		args.maps[i].prot = entry->prot & (entry->prot >> 8);
+		memcpy(args.maps[i].name, entry->name, sizeof(args.maps[i].name));
+            
+		if (!(entry = entry->next)) {
+			break;
+		}
+	}
+
+	vm_map_unlock_read(map);
+	
+	uint64_t mountPatchOffset = 0;
+	uint64_t mountPatchOffset2 = 0;
+	uint64_t disableCoreDumpPatch = 0;
+	uint64_t fwCheckPatch = 0;
+
+	switch (cachedFirmware) {
+		case 505:
+			mountPatchOffset = 0x31CA2A;
+			// mountPatchOffset2 (check did not exist on 5.05 yet)
+			fwCheckPatch = 0x3CCB79;
+			// core dump did not cause issues on 5.05
+			// could be added in the future anyways
+			break;
+		case 900:
+			mountPatchOffset = 0x3232C8;
+			mountPatchOffset2 = 0x3232C0;
+			fwCheckPatch = 0x3C5EA7;
+			disableCoreDumpPatch = 0x2EFC1B;
+			break;
+		case 1100:
+			mountPatchOffset = 0x3210C6;
+			mountPatchOffset2 = 0x3210BC;
+			fwCheckPatch = 0x3C41A7;
+			disableCoreDumpPatch = 0x2ECF2B;
+			break;
+		default:
+			break;
+	}
+
+	// mount /user on any process sandbox with read/write perm
+	uint64_t nop_slide = 0x9090909090909090;
+	if (mountPatchOffset)
+		proc_rw_mem(p, (void *)(args.maps[1].start + mountPatchOffset), 6, &nop_slide, 0, 1);
+	if (mountPatchOffset2)
+		proc_rw_mem(p, (void *)(args.maps[1].start + mountPatchOffset2), 6, &nop_slide, 0, 1);
+
+	// other patches
+	if (fwCheckPatch)
+		proc_rw_mem(p, (void *)(args.maps[1].start + fwCheckPatch), 1, (void *)"\xEB", 0, 1); // always jump
+	if (disableCoreDumpPatch) // thanks to osm
+		proc_rw_mem(p, (void *)(args.maps[1].start + disableCoreDumpPatch), 5, (void *)"\x41\xC6\x45\x0C\x00", 0, 1); // mov byte ptr [r13 + 0x0C], 0
+
+	return 0;
+}
+
 void *rwx_alloc(uint64_t size) {
 	uint64_t alignedSize = (size + 0x3FFFull) & ~0x3FFFull;
 	return (void *)kmem_alloc(*kernel_map, alignedSize);
@@ -251,11 +341,11 @@ int load_debugger() {
 
 	p = proc_find_by_name("SceShellCore");
 	if (!p) {
-		printf("[Frame4] could not find SceShellCore process!\n");
+		printf("[Frame4] <load_debugger> could not find SceShellCore process!\n");
 		return 1;
 	}
 
-	printf("[Frame4] SceShellCore found, pid = %i\n", p->pid);
+	printf("[Frame4] <load_debugger> SceShellCore found, pid = %i\n", p->pid);
 
 	vm = p->p_vmspace;
 	map = &vm->vm_map;
@@ -324,6 +414,9 @@ int runinstaller() {
 	if (load_debugger()) {
 		return 1;
 	}
+
+	printf("[Frame4] patching shellcore...\n");
+	patch_shellcore();
 
 	printf("[Frame4] Frame4 loaded!\n");
 
