@@ -2,11 +2,17 @@
 A ps4debug edit used with PS4 Toolbox.
 
 ### Features
+- Process List
+- Virtual Memory Map
 - Reading/Writing Memory (Both Kernel and Userland)
 - Debugger (Userland)
 - Function Calling (RPC)
-- Process List
-- Virtual Memory Map
+- UART Server on port 3321
+- HTTP Server on port 2812
+- Application File Redirector (AFR)
+- Set Fan Threshold Temperature
+- Basic Console Info
+- System Notifications
 - Loading ELFs
 - Loading SPRXs
 - ...
@@ -16,6 +22,10 @@ A ps4debug edit used with PS4 Toolbox.
 - 9.00
 - 11.00 (Please note 11.00 is barely tested, any feedback will help!)
 ###### You have no reason to stay on 6.72 or 7.02, just update to 9.00 if you are on those!
+
+### Libs
+- [C#](https://github.com/DeathRGH/libframe4-cs)
+- [JavaScript](https://github.com/DeathRGH/libframe4-js)
 
 ### Goals
 - [x] Make frame4 load side by side with ps4debug
