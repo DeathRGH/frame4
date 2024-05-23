@@ -34,6 +34,22 @@ int sys_open_hook(struct thread *td, struct syscall_open *args) { // this entire
 			_sys_stat = (void *)&ptrKernel[0x33DFE0];
 			original_call = (void *)&ptrKernel[0x33B990];
 			break;
+		case 672:
+			_printf = (void *)&ptrKernel[0x123280];
+			_strlen = (void *)&ptrKernel[0x2433E0];
+			_strcpy = (void *)&ptrKernel[0x2390C0];
+			_strncmp = (void *)&ptrKernel[0x39B6E0];
+			_sys_stat = (void *)&ptrKernel[0x4A0F30];
+			original_call = (void *)&ptrKernel[0x49E970];
+			break;
+		case 702:
+			_printf = (void *)&ptrKernel[0xBC730];
+			_strlen = (void *)&ptrKernel[0x93FF0];
+			_strcpy = (void *)&ptrKernel[0x2CC70];
+			_strncmp = (void *)&ptrKernel[0x3DABE0];
+			_sys_stat = (void *)&ptrKernel[0x357F20];
+			original_call = (void *)&ptrKernel[0x355940];
+			break;
 		case 900:
 			_printf = (void *)&ptrKernel[0xB7A30];
 			_strlen = (void *)&ptrKernel[0x30F450];
@@ -128,6 +144,22 @@ int sys_openat_hook(struct thread *td, struct syscall_openat *args) { // this en
 			_strncmp = (void *)&ptrKernel[0x1B8FE0];
 			_sys_stat = (void *)&ptrKernel[0x33DFE0];
 			original_call = (void *)&ptrKernel[0x33B9D0];
+			break;
+		case 672:
+			_printf = (void *)&ptrKernel[0x123280];
+			_strlen = (void *)&ptrKernel[0x2433E0];
+			_strcpy = (void *)&ptrKernel[0x2390C0];
+			_strncmp = (void *)&ptrKernel[0x39B6E0];
+			_sys_stat = (void *)&ptrKernel[0x4A0F30];
+			original_call = (void *)&ptrKernel[0x49E9B0];
+			break;
+		case 702:
+			_printf = (void *)&ptrKernel[0xBC730];
+			_strlen = (void *)&ptrKernel[0x93FF0];
+			_strcpy = (void *)&ptrKernel[0x2CC70];
+			_strncmp = (void *)&ptrKernel[0x3DABE0];
+			_sys_stat = (void *)&ptrKernel[0x357F20];
+			original_call = (void *)&ptrKernel[0x355980];
 			break;
 		case 900:
 			_printf = (void *)&ptrKernel[0xB7A30];
