@@ -23,7 +23,7 @@ A ps4debug edit used with PS4 Toolbox.
 - 7.02
 - 9.00
 - 11.00 (Please note 11.00 is barely tested, any feedback will help!)
-###### You have no reason to stay on 6.72 or 7.02, just update to 9.00 if you are on those!
+###### If you are on 6.72 or 7.02, it is recommended to update to 9.00!
 
 ### Libs
 - [C#](https://github.com/DeathRGH/libframe4-cs)
