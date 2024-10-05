@@ -20,8 +20,10 @@ A ps4debug edit used with PS4 Toolbox.
 ### Supported PS4 Firmwares
 - 5.05
 - 6.72
-- 7.02
-- 9.00
+- 7.XX
+- 8.XX
+- 9.XX
+- 10.XX
 - 11.00 (Please note 11.00 is barely tested, any feedback will help!)
 ###### If you are on 6.72 or 7.02, it is recommended to update to 9.00!
 

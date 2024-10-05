@@ -42,6 +42,22 @@ int sys_open_hook(struct thread *td, struct syscall_open *args) { // this entire
 			_sys_stat = (void *)&ptrKernel[0x4A0F30];
 			original_call = (void *)&ptrKernel[0x49E970];
 			break;
+		case 700:
+			_printf = (void*)&ptrKernel[0xBC730];
+			_strlen = (void*)&ptrKernel[0x93FF0];
+			_strcpy = (void*)&ptrKernel[0x2CC70];
+			_strncmp = (void*)&ptrKernel[0x3DABE0];
+			_sys_stat = (void*)&ptrKernel[0x357F20];
+			original_call = (void*)&ptrKernel[0x355940];
+			break;
+		case 701:
+			_printf = (void*)&ptrKernel[0xBC730];
+			_strlen = (void*)&ptrKernel[0x93FF0];
+			_strcpy = (void*)&ptrKernel[0x2CC70];
+			_strncmp = (void*)&ptrKernel[0x3DABE0];
+			_sys_stat = (void*)&ptrKernel[0x357F20];
+			original_call = (void*)&ptrKernel[0x355940];
+			break;
 		case 702:
 			_printf = (void *)&ptrKernel[0xBC730];
 			_strlen = (void *)&ptrKernel[0x93FF0];
@@ -50,6 +66,70 @@ int sys_open_hook(struct thread *td, struct syscall_open *args) { // this entire
 			_sys_stat = (void *)&ptrKernel[0x357F20];
 			original_call = (void *)&ptrKernel[0x355940];
 			break;
+		case 750:
+			_printf = (void*)&ptrKernel[0x26f740];
+			_strlen = (void*)&ptrKernel[0x2e8bc0];
+			_strcpy = (void*)&ptrKernel[0x46b0b0];
+			_strncmp = (void*)&ptrKernel[0xbf670];
+			_sys_stat = (void*)&ptrKernel[0xf6fe0];
+			original_call = (void*)&ptrKernel[0xf49c0];
+			break;
+		case 751:
+			_printf = (void*)&ptrKernel[0x26f740];
+			_strlen = (void*)&ptrKernel[0x2e8bc0];
+			_strcpy = (void*)&ptrKernel[0x46b0b0];
+			_strncmp = (void*)&ptrKernel[0xbf670];
+			_sys_stat = (void*)&ptrKernel[0xf6fe0];
+			original_call = (void*)&ptrKernel[0xf49c0];
+			break;
+		case 755:
+			_printf = (void*)&ptrKernel[0x26f740];
+			_strlen = (void*)&ptrKernel[0x2e8bc0];
+			_strcpy = (void*)&ptrKernel[0x46b0b0];
+			_strncmp = (void*)&ptrKernel[0xbf670];
+			_sys_stat = (void*)&ptrKernel[0xf6fe0];
+			original_call = (void*)&ptrKernel[0xf49c0];
+			break;
+		case 800:
+			_printf = (void*)&ptrKernel[0x430ae0];
+			_strlen = (void*)&ptrKernel[0x2f6090];
+			_strcpy = (void*)&ptrKernel[0x1e0870];
+			_strncmp = (void*)&ptrKernel[0x1846d0];
+			_sys_stat = (void*)&ptrKernel[0x215ee0];
+			original_call = (void*)&ptrKernel[0x2138b0];
+			break;
+		case 801:
+			_printf = (void*)&ptrKernel[0x430ae0];
+			_strlen = (void*)&ptrKernel[0x2f6090];
+			_strcpy = (void*)&ptrKernel[0x1e0870];
+			_strncmp = (void*)&ptrKernel[0x1846d0];
+			_sys_stat = (void*)&ptrKernel[0x215ee0];
+			original_call = (void*)&ptrKernel[0x2138b0];
+			break;
+		case 803:
+			_printf = (void*)&ptrKernel[0x430ae0];
+			_strlen = (void*)&ptrKernel[0x2f6090];
+			_strcpy = (void*)&ptrKernel[0x1e0870];
+			_strncmp = (void*)&ptrKernel[0x1846d0];
+			_sys_stat = (void*)&ptrKernel[0x215ee0];
+			original_call = (void*)&ptrKernel[0x2138b0];
+			break;
+		case 850:
+			_printf = (void*)&ptrKernel[0x15d570];
+			_strlen = (void*)&ptrKernel[0x270c40];
+			_strcpy = (void*)&ptrKernel[0x21ad40];
+			_strncmp = (void*)&ptrKernel[0x3cf6d0];
+			_sys_stat = (void*)&ptrKernel[0x32fb40];
+			original_call = (void*)&ptrKernel[0x32d510];
+			break;
+		case 852:
+			_printf = (void*)&ptrKernel[0x15d570];
+			_strlen = (void*)&ptrKernel[0x270c40];
+			_strcpy = (void*)&ptrKernel[0x21ad40];
+			_strncmp = (void*)&ptrKernel[0x3cf6d0];
+			_sys_stat = (void*)&ptrKernel[0x32fb40];
+			original_call = (void*)&ptrKernel[0x32d510];
+			break;
 		case 900:
 			_printf = (void *)&ptrKernel[0xB7A30];
 			_strlen = (void *)&ptrKernel[0x30F450];
@@ -57,6 +137,86 @@ int sys_open_hook(struct thread *td, struct syscall_open *args) { // this entire
 			_strncmp = (void *)&ptrKernel[0x124750];
 			_sys_stat = (void *)&ptrKernel[0x1DC4F0];
 			original_call = (void *)&ptrKernel[0x1D9EC0];
+			break;
+		case 903:
+			_printf = (void*)&ptrKernel[0xb79e0];
+			_strlen = (void*)&ptrKernel[0x30f0f0];
+			_strcpy = (void*)&ptrKernel[0x189f30];
+			_strncmp = (void*)&ptrKernel[0x124700];
+			_sys_stat = (void*)&ptrKernel[0x1dc4a0];
+			original_call = (void*)&ptrKernel[0x1d9e70];
+			break;
+		case 904:
+			_printf = (void*)&ptrKernel[0xb79e0];
+			_strlen = (void*)&ptrKernel[0x30f0f0];
+			_strcpy = (void*)&ptrKernel[0x189f30];
+			_strncmp = (void*)&ptrKernel[0x124700];
+			_sys_stat = (void*)&ptrKernel[0x1dc4a0];
+			original_call = (void*)&ptrKernel[0x1d9e70];
+			break;
+		case 950:
+			_printf = (void*)&ptrKernel[0x205470];
+			_strlen = (void*)&ptrKernel[0x3f1980];
+			_strcpy = (void*)&ptrKernel[0x21f500];
+			_strncmp = (void*)&ptrKernel[0x1360b0];
+			_sys_stat = (void*)&ptrKernel[0x1f4a90];
+			original_call = (void*)&ptrKernel[0x1f2460];
+			break;
+		case 951:
+			_printf = (void*)&ptrKernel[0x205470];
+			_strlen = (void*)&ptrKernel[0x3f1980];
+			_strcpy = (void*)&ptrKernel[0x21f500];
+			_strncmp = (void*)&ptrKernel[0x1360b0];
+			_sys_stat = (void*)&ptrKernel[0x1f4a90];
+			original_call = (void*)&ptrKernel[0x1f2460];
+			break;
+		case 960:
+			_printf = (void*)&ptrKernel[0x205470];
+			_strlen = (void*)&ptrKernel[0x3f1980];
+			_strcpy = (void*)&ptrKernel[0x21f500];
+			_strncmp = (void*)&ptrKernel[0x1360b0];
+			_sys_stat = (void*)&ptrKernel[0x1f4a90];
+			original_call = (void*)&ptrKernel[0x1f2460];
+			break;
+		case 1000:
+			_printf = (void*)&ptrKernel[0xc50f0];
+			_strlen = (void*)&ptrKernel[0x2e0340];
+			_strcpy = (void*)&ptrKernel[0x466e30];
+			_strncmp = (void*)&ptrKernel[0x1219b0];
+			_sys_stat = (void*)&ptrKernel[0x210720];
+			original_call = (void*)&ptrKernel[0x20e0f0];
+			break;
+		case 1001:
+			_printf = (void*)&ptrKernel[0xc50f0];
+			_strlen = (void*)&ptrKernel[0x2e0340];
+			_strcpy = (void*)&ptrKernel[0x466e30];
+			_strncmp = (void*)&ptrKernel[0x1219b0];
+			_sys_stat = (void*)&ptrKernel[0x210720];
+			original_call = (void*)&ptrKernel[0x20e0f0];
+			break;
+		case 1050:
+			_printf = (void*)&ptrKernel[0x450e80];
+			_strlen = (void*)&ptrKernel[0x160da0];
+			_strcpy = (void*)&ptrKernel[0x3f0ba0];
+			_strncmp = (void*)&ptrKernel[0x1ddda0];
+			_sys_stat = (void*)&ptrKernel[0x3806c0];
+			original_call = (void*)&ptrKernel[0x37e090];
+			break;
+		case 1070:
+			_printf = (void*)&ptrKernel[0x450e80];
+			_strlen = (void*)&ptrKernel[0x160da0];
+			_strcpy = (void*)&ptrKernel[0x3f0ba0];
+			_strncmp = (void*)&ptrKernel[0x1ddda0];
+			_sys_stat = (void*)&ptrKernel[0x3806c0];
+			original_call = (void*)&ptrKernel[0x37e090];
+			break;
+		case 1071:
+			_printf = (void*)&ptrKernel[0x450e80];
+			_strlen = (void*)&ptrKernel[0x160da0];
+			_strcpy = (void*)&ptrKernel[0x3f0ba0];
+			_strncmp = (void*)&ptrKernel[0x1ddda0];
+			_sys_stat = (void*)&ptrKernel[0x3806c0];
+			original_call = (void*)&ptrKernel[0x37e090];
 			break;
 		case 1100:
 			_printf = (void *)&ptrKernel[0x2FCBD0];

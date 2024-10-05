@@ -130,7 +130,7 @@ void patch_672(uint64_t kernbase) {
 	memcpy((void *)(kernbase + 0x459763), "\x90\x90\x90\x90\x90\x90", 6);
 }
 
-void patch_702(uint64_t kernbase) {
+void patch_70X(uint64_t kernbase) {
 	// patch memcpy first
 	*(uint8_t *)(kernbase + 0x2F04D) = 0xEB;
 
@@ -185,6 +185,234 @@ void patch_702(uint64_t kernbase) {
 	
 	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
 	memcpy((void *)(kernbase + 0x26C5F3), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_7XX(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x28f80d) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x364cd0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x364d40), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x364d60), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x77f960) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0xdceb1), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x3014c8), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x361cf5) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x3621cf), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x218AA2) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x1754ac) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x1754b4) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x301cc3) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x28fa47) = 0x9090;
+	memcpy((void*)(kernbase + 0x28fa53), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x28f952) = 0x9090;
+	memcpy((void*)(kernbase + 0x28f95e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x28fef3) = 0x9090;
+	*(uint16_t*)(kernbase + 0x28ff30) = 0x9090;
+	memcpy((void*)(kernbase + 0x28feff), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x003df2a6), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x308f1e), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_755(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x28f80d) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x364cd0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x364d40), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x364d60), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x77f9a0) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0xdceb1), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x3014c8), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x361cf5) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x3621cf), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x218AA2) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x1754ac) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x1754b4) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x301cc3) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x28fa47) = 0x9090;
+	memcpy((void*)(kernbase + 0x28fa53), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x28f952) = 0x9090;
+	memcpy((void*)(kernbase + 0x28f95e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x28fef3) = 0x9090;
+	*(uint16_t*)(kernbase + 0x28ff30) = 0x9090;
+	memcpy((void*)(kernbase + 0x28feff), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x003df2a6), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x308f1e), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_80X(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x25e1cd) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x1d5710), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x1d5780), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x1d57a0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x766df0) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0xfed61), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x3ec68b), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x174155) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x174173), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x2856f4) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x1b4bc) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x1b4c4) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x3ece76) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x25e407) = 0x9090;
+	memcpy((void*)(kernbase + 0x25e413), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x25e312) = 0x9090;
+	memcpy((void*)(kernbase + 0x25e31e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x25e8b3) = 0x9090;
+	*(uint16_t*)(kernbase + 0x25e8f0) = 0x9090;
+	memcpy((void*)(kernbase + 0x25e8bf), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x11eb86), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x3f3fbe), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_8XX(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x3a40fd) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x2935e0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x293650), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x293670), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x76ceb0) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0x84411), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x14d6db), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x132535) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x132A0F), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x215154) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x219a6c) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x219a74) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x14dec6) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x3a4337) = 0x9090;
+	memcpy((void*)(kernbase + 0x3a4343), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x3a4242) = 0x9090;
+	memcpy((void*)(kernbase + 0x3a424e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x3a47e3) = 0x9090;
+	*(uint16_t*)(kernbase + 0x3a4820) = 0x9090;
+	memcpy((void*)(kernbase + 0x3a47ef), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x2773a6), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x15500e), "\x90\x90\x90\x90\x90\x90", 6);
 }
 
 void patch_900(uint64_t kernbase) {
@@ -242,6 +470,234 @@ void patch_900(uint64_t kernbase) {
 
 	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
 	memcpy((void *)(kernbase + 0x884BE), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_90X(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x27113d) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x8bc20), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x8bc90), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x8bcb0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x765df0) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0x168001), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x80b8b), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x41d455) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x41d941), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x5f824) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x37a13c) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x37a144) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x81376) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x271377) = 0x9090;
+	memcpy((void*)(kernbase + 0x271383), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x271282) = 0x9090;
+	memcpy((void*)(kernbase + 0x27128e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x271823) = 0x9090;
+	*(uint16_t*)(kernbase + 0x271860) = 0x9090;
+	memcpy((void*)(kernbase + 0x27182f), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x152916), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x884be), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_9XX(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x201ccd) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x32590), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x32600), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x32620), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x7603c0) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0x124aa1), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x196d3b), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x47a005) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x47a4f1), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x29ae74) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x188a9c) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x188aa4) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x197526) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x201f07) = 0x9090;
+	memcpy((void*)(kernbase + 0x201f13), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x201e12) = 0x9090;
+	memcpy((void*)(kernbase + 0x201e1e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x2023b3) = 0x9090;
+	*(uint16_t*)(kernbase + 0x2023f0) = 0x9090;
+	memcpy((void*)(kernbase + 0x2023bf), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x2c9ca6), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x19e66e), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_100X(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0x472d2d) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0xa5c60), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0xa5cd0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0xa5cf0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x765620) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0xef2c1), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x39207b), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x44e625) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x44eb11), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x3bf3a4) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x33b10c) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x33b114) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x392866) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0x472f67) = 0x9090;
+	memcpy((void*)(kernbase + 0x472f73), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0x472e72) = 0x9090;
+	memcpy((void*)(kernbase + 0x472e7e), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0x473413) = 0x9090;
+	*(uint16_t*)(kernbase + 0x473450) = 0x9090;
+	memcpy((void*)(kernbase + 0x47341f), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x42cec6), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x3999ae), "\x90\x90\x90\x90\x90\x90", 6);
+}
+
+void patch_10XX(uint64_t kernbase) {
+	// patch memcpy first
+	*(uint8_t*)(kernbase + 0xd737d) = 0xEB;
+
+	// patch sceSblACMgrIsAllowedSystemLevelDebugging
+	memcpy((void*)(kernbase + 0x1f4470), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrHasMmapSelfCapability
+	memcpy((void*)(kernbase + 0x1f44e0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// patch sceSblACMgrIsAllowedToMmapSelf
+	memcpy((void*)(kernbase + 0x1f4500), "\x31\xC0\xFF\xC0\xC3", 5);
+
+	// disable sysdump_perform_dump_on_fatal_trap
+	// will continue execution and give more information on crash, such as rip
+	*(uint8_t*)(kernbase + 0x7673d0) = 0xC3;
+
+	// self patches
+	memcpy((void*)(kernbase + 0x19e151), "\x31\xC0\x90\x90\x90", 5);
+
+	// patch vm_map_protect check
+	memcpy((void*)(kernbase + 0x47b2ec), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch ptrace, thanks 2much4u
+	*(uint8_t*)(kernbase + 0x424e85) = 0xEB;
+
+	// remove all these bullshit checks from ptrace, by golden
+	memcpy((void*)(kernbase + 0x425371), "\xE9\x7C\x02\x00\x00", 5);
+
+	// patch ASLR, thanks 2much4u
+	*(uint16_t*)(kernbase + 0x345e04) = 0x9090;
+
+	// patch kmem_alloc
+	*(uint8_t*)(kernbase + 0x428a2c) = VM_PROT_ALL;
+	*(uint8_t*)(kernbase + 0x428a34) = VM_PROT_ALL;
+
+	// patch kernel elf loading, thanks to DeathRGH
+	*(uint8_t*)(kernbase + 0x47bc1e) = 0xEB;
+
+	// patch copyin/copyout to allow userland + kernel addresses in both params
+	*(uint16_t*)(kernbase + 0xd75b7) = 0x9090;
+	memcpy((void*)(kernbase + 0xd75c3), "\x90\x90\x90", 3);
+	*(uint16_t*)(kernbase + 0xd74c2) = 0x9090;
+	memcpy((void*)(kernbase + 0xd74ce), "\x90\x90\x90", 3);
+
+	// patch copyinstr
+	*(uint16_t*)(kernbase + 0xd7a63) = 0x9090;
+	*(uint16_t*)(kernbase + 0xd7aa0) = 0x9090;
+	memcpy((void*)(kernbase + 0xd7a6f), "\x90\x90\x90", 3);
+
+	// patch to remove vm_fault: fault on nofault entry, addr %llx
+	memcpy((void*)(kernbase + 0x303fa6), "\x90\x90\x90\x90\x90\x90", 6);
+
+	// patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+	memcpy((void*)(kernbase + 0x482d4e), "\x90\x90\x90\x90\x90\x90", 6);
 }
 
 void patch_1100(uint64_t kernbase) {
@@ -307,21 +763,81 @@ void patch_kernel() {
 	cpu_disable_wp();
 
 	switch (cachedFirmware) {
-		case 505:
-			patch_505(kernbase);
-			break;
-		case 672:
-			patch_672(kernbase);
-			break;
-		case 702:
-			patch_702(kernbase);
-			break;
-		case 900:
-			patch_900(kernbase);
-			break;
-		case 1100:
-			patch_1100(kernbase);
-			break;
+	case 505:
+		patch_505(kernbase);
+		break;
+	case 672:
+		patch_672(kernbase);
+		break;
+	case 700:
+		patch_70X(kernbase);
+		break;
+	case 701:
+		patch_70X(kernbase);
+		break;
+	case 702:
+		patch_70X(kernbase);
+		break;
+	case 750:
+		patch_7XX(kernbase);
+		break;
+	case 751:
+		patch_7XX(kernbase);
+		break;
+	case 755:
+		patch_755(kernbase);
+		break;
+	case 800:
+		patch_80X(kernbase);
+		break;
+	case 801:
+		patch_80X(kernbase);
+		break;
+	case 803:
+		patch_80X(kernbase);
+		break;
+	case 850:
+		patch_8XX(kernbase);
+		break;
+	case 852:
+		patch_8XX(kernbase);
+		break;
+	case 900:
+		patch_900(kernbase);
+		break;
+	case 903:
+		patch_90X(kernbase);
+		break;
+	case 904:
+		patch_90X(kernbase);
+		break;
+	case 950:
+		patch_9XX(kernbase);
+		break;
+	case 951:
+		patch_9XX(kernbase);
+		break;
+	case 960:
+		patch_9XX(kernbase);
+		break;
+	case 1000:
+		patch_100X(kernbase);
+		break;
+	case 1001:
+		patch_100X(kernbase);
+		break;
+	case 1050:
+		patch_10XX(kernbase);
+		break;
+	case 1070:
+		patch_10XX(kernbase);
+		break;
+	case 1071:
+		patch_10XX(kernbase);
+		break;
+	case 1100:
+		patch_1100(kernbase);
+		break;
 	}
 
 	cpu_enable_wp();
