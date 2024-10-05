@@ -31,4 +31,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create frame4-1.0${{ github.run_number }} frame4.bin --target ${{ github.sha }} -t frame4-1.0${{ github.run_number }}
+          gh release create Frame4-1.0${{ github.run_number }} Frame4.bin --target ${{ github.sha }} -t Frame4-1.0${{ github.run_number }}
