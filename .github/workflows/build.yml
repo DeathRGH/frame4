@@ -1,0 +1,34 @@
+name: frame4 Payload
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@master
+        with:
+          submodules: recursive # Ensure submodules are checked out
+
+      - name: Set execute permissions for scripts
+        run: chmod +x build.sh
+
+      - name: Build and package binaries
+        run: ./build.sh clean
+
+      - name: Release for branch main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create frame4-1.0${{ github.run_number }} frame4.bin --target ${{ github.sha }} -t frame4-1.0${{ github.run_number }}
