@@ -299,6 +299,10 @@ void patch_1100(uint64_t kernbase) {
 
     // patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
     memcpy((void *)(kernbase + 0x36434E), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // missing patch from goldhen so we add it here
+    // allow allocating executable memory
+    memcpy((void *)(kernbase + 0x15626A), "\x37\x41\xB2\x37", 4);
 }
 
 void patch_kernel() {
