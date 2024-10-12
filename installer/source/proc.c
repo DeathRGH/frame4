@@ -258,112 +258,430 @@ int proc_create_thread(struct proc *p, uint64_t address) {
             continue;
         }
 
-        if (!memcmp(entries[i].name, "libkernel.sprx", 14)) {
-            switch(cachedFirmware) {
-                case 505:
-                    _scePthreadAttrInit = entries[i].start + 0x12660;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x12680;
-                    _scePthreadCreate = entries[i].start + 0x12AA0;
-                    _thr_initial = entries[i].start + 0x84C20;
-                    break;
-				case 672:
-                    _scePthreadAttrInit = entries[i].start + 0x13A40;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x13A60;
-                    _scePthreadCreate = entries[i].start + 0x13E80;
-                    _thr_initial = entries[i].start + 0x435420;
-                    break;
-                case 702:
-                    _scePthreadAttrInit = entries[i].start + 0x136E0;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x13700;
-                    _scePthreadCreate = entries[i].start + 0x13B20;
-                    _thr_initial = entries[i].start + 0x8D420;
-                    break;
-                case 900:
-                    _scePthreadAttrInit = entries[i].start + 0x13660;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x13680;
-                    _scePthreadCreate = entries[i].start + 0x13AA0;
-                    _thr_initial = entries[i].start + 0x8E430;
-                    break;
-				case 1100:
-                    _scePthreadAttrInit = entries[i].start + 0x134A0;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x134C0;
-                    _scePthreadCreate = entries[i].start + 0x138E0;
-                    _thr_initial = entries[i].start + 0x8E430;
-                    break;
-            }
-            break;
-        }
-        if (!memcmp(entries[i].name, "libkernel_web.sprx", 18)) {
-            switch(cachedFirmware) {
-                case 505:
-                    _scePthreadAttrInit = entries[i].start + 0x1E730;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0xFA80;
-                    _scePthreadCreate = entries[i].start + 0x98C0;
-                    _thr_initial = entries[i].start + 0x84C20;
-                    break;
-				case 672:
-                    _scePthreadAttrInit = entries[i].start + 0x1FD20;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x10540;
-                    _scePthreadCreate = entries[i].start + 0xA0F0;
-                    _thr_initial = entries[i].start + 0x435420;
-                    break;
-                case 702:
-                    _scePthreadAttrInit = entries[i].start + 0x1F9B0;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x103C0;
-                    _scePthreadCreate = entries[i].start + 0x9FF0;
-                    _thr_initial = entries[i].start + 0x8D420;
-                    break;
-                case 900:
-                    _scePthreadAttrInit = entries[i].start + 0x87F0;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x1A580;
-                    _scePthreadCreate = entries[i].start + 0x204C0;
-                    _thr_initial = entries[i].start + 0x8E430;
-                    break;
-				case 1100:
-                    _scePthreadAttrInit = entries[i].start + 0x15990;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0xE800;
-                    _scePthreadCreate = entries[i].start + 0x20D90;
-                    _thr_initial = entries[i].start + 0x8E430;
-                    break;
-            }
-            break;
-        }
-        if (!memcmp(entries[i].name, "libkernel_sys.sprx", 18)) {
-            switch(cachedFirmware) {
-                case 505:
-                    _scePthreadAttrInit = entries[i].start + 0x13190;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x131B0;
-                    _scePthreadCreate = entries[i].start + 0x135D0;
-                    _thr_initial = entries[i].start + 0x89030;
-                    break;
-				case 672:
-                    _scePthreadAttrInit = entries[i].start + 0x14570;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x14590;
-                    _scePthreadCreate = entries[i].start + 0x149B0;
-                    _thr_initial = entries[i].start + 0x435830;
-                    break;
-                case 702:
-                    _scePthreadAttrInit = entries[i].start + 0x14210;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x14230;
-                    _scePthreadCreate = entries[i].start + 0x14650;
-                    _thr_initial = entries[i].start + 0x8D830;
-                    break;
-                case 900:
-                    _scePthreadAttrInit = entries[i].start + 0x14190;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x141B0;
-                    _scePthreadCreate = entries[i].start + 0x145D0;
-                    _thr_initial = entries[i].start + 0x8E830;
-                    break;
-				case 1100:
-                    _scePthreadAttrInit = entries[i].start + 0x14010;
-                    _scePthreadAttrSetstacksize = entries[i].start + 0x14030;
-                    _scePthreadCreate = entries[i].start + 0x14450;
-                    _thr_initial = entries[i].start + 0x8E830;
-                    break;
-            }
-            break;
-        }
-    }
+       if (!memcmp(entries[i].name, "libkernel.sprx", 14)) {
+           switch (cachedFirmware) {
+           case 505:
+               _scePthreadAttrInit = entries[i].start + 0x12660;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x12680;
+               _scePthreadCreate = entries[i].start + 0x12AA0;
+               _thr_initial = entries[i].start + 0x84C20;
+               break;
+           case 672:
+               _scePthreadAttrInit = entries[i].start + 0x13A40;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13A60;
+               _scePthreadCreate = entries[i].start + 0x13E80;
+               _thr_initial = entries[i].start + 0x435420;
+               break;
+           case 702:
+               _scePthreadAttrInit = entries[i].start + 0x136E0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13700;
+               _scePthreadCreate = entries[i].start + 0x13B20;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 750:
+               _scePthreadAttrInit = entries[i].start + 0x13630;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13650;
+               _scePthreadCreate = entries[i].start + 0x13A70;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 751:
+               _scePthreadAttrInit = entries[i].start + 0x13630;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13650;
+               _scePthreadCreate = entries[i].start + 0x13A70;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 755:
+               _scePthreadAttrInit = entries[i].start + 0x13630;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13650;
+               _scePthreadCreate = entries[i].start + 0x13A70;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 800:
+               _scePthreadAttrInit = entries[i].start + 0x135D0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x135F0;
+               _scePthreadCreate = entries[i].start + 0x13A10;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 801:
+               _scePthreadAttrInit = entries[i].start + 0x135D0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x135F0;
+               _scePthreadCreate = entries[i].start + 0x13A10;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 803:
+               _scePthreadAttrInit = entries[i].start + 0x135D0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x135F0;
+               _scePthreadCreate = entries[i].start + 0x13A10;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 850:
+               _scePthreadAttrInit = entries[i].start + 0x13660;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13680;
+               _scePthreadCreate = entries[i].start + 0x13AA0;
+               _thr_initial = entries[i].start + 0x89430;
+               break;
+           case 852:
+               _scePthreadAttrInit = entries[i].start + 0x13660;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13680;
+               _scePthreadCreate = entries[i].start + 0x13AA0;
+               _thr_initial = entries[i].start + 0x89430;
+               break;
+           case 900:
+               _scePthreadAttrInit = entries[i].start + 0x13660;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13680;
+               _scePthreadCreate = entries[i].start + 0x13AA0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 903:
+               _scePthreadAttrInit = entries[i].start + 0x13660;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13680;
+               _scePthreadCreate = entries[i].start + 0x13AA0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 904:
+               _scePthreadAttrInit = entries[i].start + 0x13660;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13680;
+               _scePthreadCreate = entries[i].start + 0x13AA0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 950:
+               _scePthreadAttrInit = entries[i].start + 0x132F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13310;
+               _scePthreadCreate = entries[i].start + 0x13730;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 951:
+               _scePthreadAttrInit = entries[i].start + 0x132F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13310;
+               _scePthreadCreate = entries[i].start + 0x13730;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 960:
+               _scePthreadAttrInit = entries[i].start + 0x132F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13310;
+               _scePthreadCreate = entries[i].start + 0x13730;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1000:
+               _scePthreadAttrInit = entries[i].start + 0x132F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13310;
+               _scePthreadCreate = entries[i].start + 0x13730;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1001:
+               _scePthreadAttrInit = entries[i].start + 0x132F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13310;
+               _scePthreadCreate = entries[i].start + 0x13730;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1050:
+               _scePthreadAttrInit = entries[i].start + 0x13400;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13420;
+               _scePthreadCreate = entries[i].start + 0x13840;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1070:
+               _scePthreadAttrInit = entries[i].start + 0x13400;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13420;
+               _scePthreadCreate = entries[i].start + 0x13840;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1071:
+               _scePthreadAttrInit = entries[i].start + 0x13400;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13420;
+               _scePthreadCreate = entries[i].start + 0x13840;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1100:
+               _scePthreadAttrInit = entries[i].start + 0x134A0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x134C0;
+               _scePthreadCreate = entries[i].start + 0x138E0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           }
+           break;
+       }
+       if (!memcmp(entries[i].name, "libkernel_web.sprx", 18)) {
+           switch (cachedFirmware) {
+           case 505:
+               _scePthreadAttrInit = entries[i].start + 0x1E730;
+               _scePthreadAttrSetstacksize = entries[i].start + 0xFA80;
+               _scePthreadCreate = entries[i].start + 0x98C0;
+               _thr_initial = entries[i].start + 0x84C20;
+               break;
+           case 672:
+               _scePthreadAttrInit = entries[i].start + 0x1FD20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10540;
+               _scePthreadCreate = entries[i].start + 0xA0F0;
+               _thr_initial = entries[i].start + 0x435420;
+               break;
+           case 702:
+               _scePthreadAttrInit = entries[i].start + 0x1F9B0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x103C0;
+               _scePthreadCreate = entries[i].start + 0x9FF0;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 750:
+               _scePthreadAttrInit = entries[i].start + 0x1FA70;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10380;
+               _scePthreadCreate = entries[i].start + 0x9F10;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 751:
+               _scePthreadAttrInit = entries[i].start + 0x1FA70;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10380;
+               _scePthreadCreate = entries[i].start + 0x9F10;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 755:
+               _scePthreadAttrInit = entries[i].start + 0x1FA70;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10380;
+               _scePthreadCreate = entries[i].start + 0x9F10;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 800:
+               _scePthreadAttrInit = entries[i].start + 0x1F920;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10270;
+               _scePthreadCreate = entries[i].start + 0x9F60;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 801:
+               _scePthreadAttrInit = entries[i].start + 0x1F920;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10270;
+               _scePthreadCreate = entries[i].start + 0x9F60;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 803:
+               _scePthreadAttrInit = entries[i].start + 0x1F920;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10270;
+               _scePthreadCreate = entries[i].start + 0x9F60;
+               _thr_initial = entries[i].start + 0x8D420;
+               break;
+           case 850:
+               _scePthreadAttrInit = entries[i].start + 0x18D50;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x86C0;
+               _scePthreadCreate = entries[i].start + 0x286B0;
+               _thr_initial = entries[i].start + 0x89430;
+               break;
+           case 852:
+               _scePthreadAttrInit = entries[i].start + 0x18D50;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x86C0;
+               _scePthreadCreate = entries[i].start + 0x286B0;
+               _thr_initial = entries[i].start + 0x89430;
+               break;
+           case 900:
+               _scePthreadAttrInit = entries[i].start + 0x87F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x1A580;
+               _scePthreadCreate = entries[i].start + 0x204C0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 903:
+               _scePthreadAttrInit = entries[i].start + 0x87F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x1A580;
+               _scePthreadCreate = entries[i].start + 0x204C0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 904:
+               _scePthreadAttrInit = entries[i].start + 0x87F0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x1A580;
+               _scePthreadCreate = entries[i].start + 0x204C0;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1000:
+               _scePthreadAttrInit = entries[i].start + 0x14C20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x106D0;
+               _scePthreadCreate = entries[i].start + 0x5800;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1001:
+               _scePthreadAttrInit = entries[i].start + 0x14C20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x106D0;
+               _scePthreadCreate = entries[i].start + 0x5800;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1050:
+               _scePthreadAttrInit = entries[i].start + 0x17D80;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10660;
+               _scePthreadCreate = entries[i].start + 0x1BE60;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1070:
+               _scePthreadAttrInit = entries[i].start + 0x17D80;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10660;
+               _scePthreadCreate = entries[i].start + 0x1BE60;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1071:
+               _scePthreadAttrInit = entries[i].start + 0x17D80;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x10660;
+               _scePthreadCreate = entries[i].start + 0x1BE60;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           case 1100:
+               _scePthreadAttrInit = entries[i].start + 0x15990;
+               _scePthreadAttrSetstacksize = entries[i].start + 0xE800;
+               _scePthreadCreate = entries[i].start + 0x20D90;
+               _thr_initial = entries[i].start + 0x8E430;
+               break;
+           }
+           break;
+       }
+       if (!memcmp(entries[i].name, "libkernel_sys.sprx", 18)) {
+           switch (cachedFirmware) {
+           case 505:
+               _scePthreadAttrInit = entries[i].start + 0x13190;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x131B0;
+               _scePthreadCreate = entries[i].start + 0x135D0;
+               _thr_initial = entries[i].start + 0x89030;
+               break;
+           case 672:
+               _scePthreadAttrInit = entries[i].start + 0x14570;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14590;
+               _scePthreadCreate = entries[i].start + 0x149B0;
+               _thr_initial = entries[i].start + 0x435830;
+               break;
+           case 700:
+               _scePthreadAttrInit = entries[i].start + 0x14160;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14180;
+               _scePthreadCreate = entries[i].start + 0x145A0;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 701:
+               _scePthreadAttrInit = entries[i].start + 0x14210;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14230;
+               _scePthreadCreate = entries[i].start + 0x14650;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 702:
+               _scePthreadAttrInit = entries[i].start + 0x14210;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14230;
+               _scePthreadCreate = entries[i].start + 0x14650;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 750:
+               _scePthreadAttrInit = entries[i].start + 0x14160;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14180;
+               _scePthreadCreate = entries[i].start + 0x145A0;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 751:
+               _scePthreadAttrInit = entries[i].start + 0x14160;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14180;
+               _scePthreadCreate = entries[i].start + 0x145A0;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 755:
+               _scePthreadAttrInit = entries[i].start + 0x14160;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14180;
+               _scePthreadCreate = entries[i].start + 0x145A0;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 800:
+               _scePthreadAttrInit = entries[i].start + 0x153C0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x154F0;
+               _scePthreadCreate = entries[i].start + 0x14540;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 801:
+               _scePthreadAttrInit = entries[i].start + 0x153C0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x154F0;
+               _scePthreadCreate = entries[i].start + 0x14540;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 803:
+               _scePthreadAttrInit = entries[i].start + 0x153C0;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x154F0;
+               _scePthreadCreate = entries[i].start + 0x14540;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 850:
+               _scePthreadAttrInit = entries[i].start + 0x15450;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x15580;
+               _scePthreadCreate = entries[i].start + 0x145D0;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 852:
+               _scePthreadAttrInit = entries[i].start + 0x15450;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x15580;
+               _scePthreadCreate = entries[i].start + 0x145D0;
+               _thr_initial = entries[i].start + 0x8D830;
+               break;
+           case 900:
+               _scePthreadAttrInit = entries[i].start + 0x14190;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x141B0;
+               _scePthreadCreate = entries[i].start + 0x145D0;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 903:
+               _scePthreadAttrInit = entries[i].start + 0x14190;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x141B0;
+               _scePthreadCreate = entries[i].start + 0x145D0;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 904:
+               _scePthreadAttrInit = entries[i].start + 0x14190;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x141B0;
+               _scePthreadCreate = entries[i].start + 0x145D0;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 950:
+               _scePthreadAttrInit = entries[i].start + 0x13E20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13E40;
+               _scePthreadCreate = entries[i].start + 0x14260;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 951:
+               _scePthreadAttrInit = entries[i].start + 0x13E20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13E40;
+               _scePthreadCreate = entries[i].start + 0x14260;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 960:
+               _scePthreadAttrInit = entries[i].start + 0x13E20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13E40;
+               _scePthreadCreate = entries[i].start + 0x14260;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 1000:
+               _scePthreadAttrInit = entries[i].start + 0x13E20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13E40;
+               _scePthreadCreate = entries[i].start + 0x14260;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 1001:
+               _scePthreadAttrInit = entries[i].start + 0x13E20;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13E40;
+               _scePthreadCreate = entries[i].start + 0x14260;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 1050:
+               _scePthreadAttrInit = entries[i].start + 0x13F70;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13F90;
+               _scePthreadCreate = entries[i].start + 0x143B0;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 1070:
+               _scePthreadAttrInit = entries[i].start + 0x13F70;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13F90;
+               _scePthreadCreate = entries[i].start + 0x143B0;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 1071:
+               _scePthreadAttrInit = entries[i].start + 0x13F70;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x13F90;
+               _scePthreadCreate = entries[i].start + 0x143B0;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           case 1100:
+               _scePthreadAttrInit = entries[i].start + 0x14010;
+               _scePthreadAttrSetstacksize = entries[i].start + 0x14030;
+               _scePthreadCreate = entries[i].start + 0x14450;
+               _thr_initial = entries[i].start + 0x8E830;
+               break;
+           }
+           break;
+       }
+   }
 
     if (!_scePthreadAttrInit) {
         goto error;
