@@ -54,7 +54,7 @@ int handle_version(int fd, struct cmd_packet *packet) {
     return 0;
 }
 
-// not sure if this is working right now...
+// tested it again (0.2.6) and could not find any issue
 int unload_handle(int fd, struct cmd_packet *packet) {
     unload_cmd_sent = true;
     uprintf("Unloading Frame4, wait 5 Seconds for all threads to end...");
@@ -294,7 +294,10 @@ int handle_socket_client(struct server_client *svc) {
             if (errno == ECONNRESET)
                 goto error;
 
-            sceKernelUsleep(25000);
+            // time the handler sleeps in between packets
+            // tested with 1ms but gave inconsistency
+            // if this causes issue on wifi set it higher
+            sceKernelUsleep(2000); // was 25000
             continue;
         }
 
@@ -518,11 +521,11 @@ int start_server() {
             scePthreadCreate(&thread, NULL, (void *)handle_socket_client, (void *)svc, "clienthandler");
         }
 
-        sceKernelSleep(2);
+        // this is the time we sleep in between adding clients
+        // was 2 seconds which felt unresponsive at times
+        sceKernelUsleep(1000 * 250); //sceKernelSleep(2);
     }
 
-    //sceNetSocketAbort(0, broadcastServerSocketId);
-    //sceNetSocketClose(broadcastServerSocketId);
     sceNetSocketAbort(0, serv);
     sceNetSocketClose(serv);
     uprintf("Server thread has ended!");
