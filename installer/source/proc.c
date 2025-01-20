@@ -2,13 +2,11 @@
 #include "kfirmware.h"
 
 struct proc *proc_find_by_name(const char *name) {
-    int pcomm_offset = 0x00;
+    int pcomm_offset = 0x454;
     if (cachedFirmware == 505) {
         pcomm_offset = 0x44C;
     }
-	else {
-        pcomm_offset = 0x454;
-    }
+	
     struct proc *p;
 
     if (!name) {

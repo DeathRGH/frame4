@@ -14,13 +14,11 @@ inline void write_jmp(uint64_t address, uint64_t destination) {
 }
 
 int sys_proc_list(struct thread *td, struct sys_proc_list_args *uap) {
-    int pcomm_offset = 0x00;
+    int pcomm_offset = 0x454;
     if (cachedFirmware == 505) {
         pcomm_offset = 0x44C;
     }
-	else {
-        pcomm_offset = 0x454;
-    }
+
     struct proc *p;
     int num;
     int r;
