@@ -39,6 +39,23 @@ A ps4debug edit used with PS4 Toolbox.
 - [ ] Stop hijacking shell core and instead create our own process
 - [ ] Move stuff to userland that doesn't need to be in kernel
 
+### Backtrace Hooks
+Adds detailed info on the crash logs so you never have to calculate a module offset anymore.
+```
+...
+#
+# backtrace:
+copyin: Cinematic has nonsleeping lock
+# 0000000000BB7BF1 </data/default_mp.elf> + 7B7BF1
+# 0000000000B924EA </data/default_mp.elf> + 7924EA
+# 00000000009D75A4 </data/default_mp.elf> + 5D75A4
+# 000000000083BE99 </data/default_mp.elf> + 43BE99
+# 00000008000075C2 </i8fsuSWSEf/common/lib/libkernel.sprx> + 75C2
+# 0000000000000000 <unknown_module> + 0
+#
+...
+```
+
 ### Contributing
 If you want to contribute, feel free to make a pull request or open an issue.
 
