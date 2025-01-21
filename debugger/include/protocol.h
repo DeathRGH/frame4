@@ -5,7 +5,7 @@
 #include "errno.h"
 #include "kdbg.h"
 
-#define PACKET_VERSION              "0.2.6"
+#define PACKET_VERSION              "0.2.7"
 #define PACKET_MAGIC                0xFFAABBCC
 
 #define CMD_VERSION                 0xBD000001
@@ -27,6 +27,7 @@
 #define CMD_PROC_SCAN_COUNT_RESULTS 0xBDAA000E
 #define CMD_PROC_PRX_LOAD           0xBDAA000F
 #define CMD_PROC_PRX_UNLOAD         0xBDAA0010
+#define CMD_PROC_PRX_LIST           0xBDAA0011
 
 #define SCAN_MAX_LENGTH             0x80000 // 512KB buffer
 
@@ -234,7 +235,10 @@ struct cmd_proc_prx_unload_packet {
     uint32_t prx_handle;
 } __attribute__((packed));
 #define CMD_PROC_PRX_UNLOAD_PACKET_SIZE 4
-
+struct cmd_proc_prx_list_packet {
+    uint32_t pid;
+} __attribute__((packed));
+#define CMD_PROC_PRX_LIST_PACKET_SIZE 4
 
 // debug
 struct cmd_debug_attach_packet {

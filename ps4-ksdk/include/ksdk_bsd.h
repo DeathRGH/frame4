@@ -277,4 +277,34 @@ TYPE_FIELD(uint64_t td_retval[2], 0x398);
 TYPE_FIELD(uint16_t td_priority, 0x380);
 TYPE_END();
 
+struct SceDbgModuleSegmentInfo {
+    void *base_addr;
+    uint32_t size;
+    int32_t prot;
+};
+
+struct dynlib_info_ex {
+    uint64_t size;
+    char name[256];
+    int32_t handle;
+    uint16_t tls_index;
+    uint16_t pad0;
+    uintptr_t tls_init_addr;
+    uint32_t tls_init_size;
+    uint32_t tls_size;
+    uint32_t tls_offset;
+    uint32_t tls_align;
+    uintptr_t init_proc_addr;
+    uintptr_t fini_proc_addr;
+    uint64_t reserved1;
+    uint64_t reserved2;
+    uintptr_t eh_frame_hdr_addr;
+    uintptr_t eh_frame_addr;
+    uint32_t eh_frame_hdr_size;
+    uint32_t eh_frame_size;
+    struct SceDbgModuleSegmentInfo segment_info[4];
+    uint32_t segment_count;
+    uint32_t ref_count;
+};
+
 #endif

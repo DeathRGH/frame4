@@ -1291,6 +1291,50 @@ int proc_prx_unload_handle(int fd, struct cmd_packet *packet) {
     return 0;
 }
 
+int proc_prx_list_handle(int fd, struct cmd_packet *packet) {
+    struct cmd_proc_prx_list_packet *listpack;
+    struct sys_proc_prx_list_args args;
+    uint32_t size;
+    uint32_t num;
+
+    listpack = (struct cmd_proc_prx_list_packet *)packet->data;
+
+    if (listpack) {
+        memset(&args, NULL, sizeof(args));
+
+        if (sys_proc_cmd(listpack->pid, SYS_PROC_PRX_LIST, &args)) {
+            net_send_status(fd, CMD_ERROR);
+            return 1;
+        }
+
+        size = args.num * sizeof(struct prx_list_entry);
+
+        args.entries = (struct prx_list_entry *)pfmalloc(size); // need to chunk this
+        memset(args.entries, NULL, size);
+        if (!args.entries) {
+            net_send_status(fd, CMD_ERROR);
+            return 1;
+        }
+
+        if (sys_proc_cmd(listpack->pid, SYS_PROC_PRX_LIST, &args)) {
+            free(args.entries);
+            net_send_status(fd, CMD_ERROR);
+            return 1;
+        }
+
+        net_send_status(fd, CMD_SUCCESS);
+        num = (uint32_t)args.num;
+        net_send_data(fd, &num, sizeof(uint32_t));
+        net_send_data(fd, args.entries, size);
+
+        free(args.entries);
+        return 0;
+    }
+
+    net_send_status(fd, CMD_ERROR);
+    return 1;
+}
+
 int proc_handle(int fd, struct cmd_packet *packet) {
     switch (packet->cmd) {
     case CMD_PROC_LIST:
@@ -1325,6 +1369,8 @@ int proc_handle(int fd, struct cmd_packet *packet) {
         return proc_prx_load_handle(fd, packet);
     case CMD_PROC_PRX_UNLOAD:
         return proc_prx_unload_handle(fd, packet);
+    case CMD_PROC_PRX_LIST:
+        return proc_prx_list_handle(fd, packet);
     }
 
     return 1;

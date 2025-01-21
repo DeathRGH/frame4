@@ -37,6 +37,7 @@ int sys_proc_rw(struct thread *td, struct sys_proc_rw_args *uap);
 #define SYS_PROC_ELF        7
 #define SYS_PROC_INFO       8
 #define SYS_PROC_THRINFO    9
+#define SYS_PROC_PRX_LIST   10
 struct sys_proc_alloc_args {
     uint64_t address;
     uint64_t length;
@@ -84,6 +85,18 @@ struct sys_proc_thrinfo_args {
     uint32_t lwpid;
     uint32_t priority;
     char name[32];
+} __attribute__((packed));
+struct prx_list_entry {
+    uint32_t handle;
+    char name[256];
+    uint64_t text_address;
+    uint32_t text_size;
+    uint64_t data_address;
+    uint32_t data_size;
+}  __attribute__((packed));
+struct sys_proc_prx_list_args {
+    struct prx_list_entry *entries;
+    uint64_t num;
 } __attribute__((packed));
 struct sys_proc_cmd_args {
     uint64_t pid;

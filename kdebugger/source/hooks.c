@@ -158,7 +158,6 @@ int sys_proc_install_handle(struct proc *p, struct sys_proc_install_args *args) 
 }
 
 int sys_proc_call_handle(struct proc *p, struct sys_proc_call_args *args) {
-
     uint64_t rpcstub = args->rpcstub;
     // write registers
     // these two structures are basically 1:1 (it is hackey but meh)
@@ -269,6 +268,61 @@ int sys_proc_thrinfo_handle(struct proc *p, struct sys_proc_thrinfo_args *args) 
     return 1;
 }
 
+int sys_proc_prx_list_handle(struct proc *p, struct sys_proc_prx_list_args *args) {
+    int handles[256];
+    uint64_t num;
+    
+    memset(handles, 0, 256 * 4);
+
+    struct dynlib_get_list_args {
+        uint64_t handles_out;
+        uint64_t handles_out_count;
+        uint64_t actual_count;
+    };
+
+    p->p_threads.tqh_first->td_retval[0] = 0;
+
+    struct dynlib_get_list_args uap;
+    uap.handles_out = (uint64_t)handles;
+    uap.handles_out_count = 256;
+    uap.actual_count = (uint64_t)&num;
+
+    ((int(*)(struct thread *, struct dynlib_get_list_args *))sysents[592].sy_call)(p->p_threads.tqh_first, &uap); // sys_dynlib_get_list
+
+    args->num = num;
+
+    if (args->entries) {
+        for (int i = 0; i < args->num; i++) {
+            struct dynlib_info_ex info;
+            info.size = sizeof(struct dynlib_info_ex);
+
+            struct dynlib_get_info_ex_args {
+                uint64_t handle;
+                uint64_t unk;
+                uint64_t info;
+            };
+
+            p->p_threads.tqh_first->td_retval[0] = 0;
+
+            struct dynlib_get_info_ex_args uap2;
+            uap2.handle = handles[i];
+            uap2.unk = 1;
+            uap2.info = (uint64_t)&info;
+
+            ((int(*)(struct thread *, struct dynlib_get_info_ex_args *))sysents[608].sy_call)(p->p_threads.tqh_first, &uap2); // sys_dynlib_get_info_ex
+
+            args->entries[i].handle = handles[i];
+            args->entries[i].text_address = (uint64_t)info.segment_info[0].base_addr;
+            args->entries[i].text_size = (uint64_t)info.segment_info[0].size;
+            args->entries[i].data_address = (uint64_t)info.segment_info[1].base_addr;
+            args->entries[i].data_size = (uint64_t)info.segment_info[1].size;
+            memcpy(args->entries[i].name, info.name, sizeof(args->entries[i].name));
+        }
+    }
+
+    return 0;
+}
+
 int sys_proc_cmd(struct thread *td, struct sys_proc_cmd_args *uap) {
     struct proc *p;
     int r;
@@ -306,6 +360,9 @@ int sys_proc_cmd(struct thread *td, struct sys_proc_cmd_args *uap) {
             break;
         case SYS_PROC_THRINFO:
             r = sys_proc_thrinfo_handle(p, (struct sys_proc_thrinfo_args *)uap->data);
+            break;
+        case SYS_PROC_PRX_LIST:
+            r = sys_proc_prx_list_handle(p, (struct sys_proc_prx_list_args *)uap->data);
             break;
         default:
             r = 1;
