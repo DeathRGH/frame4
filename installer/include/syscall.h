@@ -1,7 +1,7 @@
 #ifndef _SYSCALL_H
 #define _SYSCALL_H
 
-#define	SYSCALL(name, number)	\
+#define SYSCALL(name, number) \
     __asm__(".intel_syntax noprefix"); \
     __asm__(".globl " #name ""); \
     __asm__("" #name ":"); \

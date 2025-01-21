@@ -22,7 +22,7 @@ int elf_mapped_size(void *elf, uint64_t *msize) {
             }
         }
     }
-	else {
+    else {
         // use sections
         for (int i = 0; i < ehdr->e_shnum; i++) {
             struct Elf64_Shdr *shdr = elf_section(ehdr, i);
@@ -59,7 +59,7 @@ int map_elf(void *elf, void *exec) {
             }
         }
     }
-	else {
+    else {
         // use sections
         for (int i = 0; i < ehdr->e_shnum; i++) {
             struct Elf64_Shdr *shdr = elf_section(ehdr, i);

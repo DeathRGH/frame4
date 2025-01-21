@@ -1,5 +1,3 @@
-// cleaned 2022/07/29
-
 #ifndef _KERN_H
 #define _KERN_H
 

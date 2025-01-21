@@ -298,7 +298,7 @@ void init_900sdk(uint8_t *kbase) {
 }
 
 void init_1100sdk(uint8_t *kbase) {
-	Xfast_syscall = (void *)(kbase + 0x1C0);
+    Xfast_syscall = (void *)(kbase + 0x1C0);
     copyin = (void *)(kbase + 0x2DDFE0);
     copyout = (void *)(kbase + 0x2DDEF0);
     printf = (void *)(kbase + 0x2FCBD0);
@@ -357,13 +357,13 @@ void init_1100sdk(uint8_t *kbase) {
 
 void init_ksdk() {
     uint64_t kbase = get_kbase();
-	cachedKernelBase = kbase;
+    cachedKernelBase = kbase;
     unsigned short firmwareVersion = kget_firmware_from_base(kbase);
     switch(firmwareVersion) {
         case 505:
             init_505sdk((uint8_t *)kbase);
             break;
-		case 672:
+        case 672:
             init_672sdk((uint8_t *)kbase);
             break;
         case 702:
@@ -372,7 +372,7 @@ void init_ksdk() {
         case 900:
             init_900sdk((uint8_t *)kbase);
             break;
-		case 1100:
+        case 1100:
             init_1100sdk((uint8_t *)kbase);
             break;
     }

@@ -110,32 +110,32 @@ int check_debug_interrupt() {
     signal = WSTOPSIG(status);
     //uprintf("check_debug_interrupt signal %i", signal);
 
-	// ##########################################################################
-	//uint64_t num;
-	//sys_proc_list(NULL, &num);
-	//
-	//if (num <= 0) {
-	//	uprintf("check_debug_interrupt - could not get proc list (num <= 0)");
-	//	return 1;
-	//}
+    // ##########################################################################
+    //uint64_t num;
+    //sys_proc_list(NULL, &num);
+    //
+    //if (num <= 0) {
+    //    uprintf("check_debug_interrupt - could not get proc list (num <= 0)");
+    //    return 1;
+    //}
 
-	//struct proc_list_entry entry[num];
-	//sys_proc_list(entry, &num);
+    //struct proc_list_entry entry[num];
+    //sys_proc_list(entry, &num);
 
-	//int foundProc = 0;
-	//for (int i = 0; i < num; i++) {
-	//	if (entry[i].pid == curdbgctx->pid) {
-	//		foundProc = 1;
-	//		break;
-	//	}
-	//}
+    //int foundProc = 0;
+    //for (int i = 0; i < num; i++) {
+    //    if (entry[i].pid == curdbgctx->pid) {
+    //        foundProc = 1;
+    //        break;
+    //    }
+    //}
 
-	//if (!foundProc) {
-	//	uprintf("check_debug_interrupt - could not find proc [%i] in list", curdbgctx->pid);
-	//	return 1;
-	//}
+    //if (!foundProc) {
+    //    uprintf("check_debug_interrupt - could not find proc [%i] in list", curdbgctx->pid);
+    //    return 1;
+    //}
 
-	// ##########################################################################
+    // ##########################################################################
 
     if (signal == SIGSTOP) {
         uprintf("passed on a SIGSTOP");
@@ -420,7 +420,7 @@ void *broadcast_thread(void *arg) {
     while (1) {
         if (unload_cmd_sent) {
             break;
-		}
+        }
 
         scePthreadYield();
 
@@ -436,7 +436,7 @@ void *broadcast_thread(void *arg) {
         }
         else {
             uprintf("sceNetRecvfrom failed");
-		}
+        }
 
         sceKernelSleep(1);
     }
@@ -495,7 +495,7 @@ int start_server() {
     while (1) {
         if (unload_cmd_sent) {
             break;
-		}
+        }
 
         scePthreadYield();
 
@@ -724,7 +724,7 @@ void handle_web_write_memory(int fd, char *query) {
     char *memoryEnd;
     uint64_t memoryAddress = strtoull(address, &memoryEnd, 16);
     int bytesLength = strlen(bytes) / 2;
-	char *byteData = pfmalloc(bytesLength);
+    char *byteData = pfmalloc(bytesLength);
     for(int i = 0; i < bytesLength; i++) {
         char tempBuffer[3];
         char *dummy;
@@ -858,8 +858,8 @@ int start_http() {
     server = sceNetSocket("httpserver", AF_INET, SOCK_STREAM, 0);
     if (server < 0) {
         return 1;
-	}
-	
+    }
+    
     int flag = 1;
     sceNetSetsockopt(server, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
 
@@ -869,17 +869,17 @@ int start_http() {
     int bindResponse = sceNetBind(server, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
     if (bindResponse) {
         return 1;
-	}
+    }
 
     int listenResponse = sceNetListen(server, SERVER_MAXCLIENTS * 2);
     if (listenResponse) {
         return 1;
-	}
+    }
 
     while(1) {
         if (unload_cmd_sent) {
             break;
-		}
+        }
         clientSocket = sceNetAccept(server, (struct sockaddr*)&clientAddress, &clientAddressLength);
         if (clientSocket > -1) {
             handle_web_client(clientSocket);
@@ -900,7 +900,7 @@ int read_kernel_for_client(struct uart_server_client *svc) {
     while (1) {
         if (unload_cmd_sent) {
             break;
-		}
+        }
         bytesRead = sceKernelRead(logDevice, s_Buffer, 16);
         if (bytesRead > 0) {
             if (write(svc->fd, s_Buffer, strlen(s_Buffer)) <= 0) {
@@ -910,7 +910,7 @@ int read_kernel_for_client(struct uart_server_client *svc) {
         memset(s_Buffer, 0, sizeof(s_Buffer));
     }
 
-	uprintf("uart client disconnected");
+    uprintf("uart client disconnected");
     free_uart_client(svc);
     return 0;
 }
@@ -961,7 +961,7 @@ int start_uart_server() {
     while (1) {
         if (unload_cmd_sent) {
             break;
-		}
+        }
         scePthreadYield();
 
         errno = NULL;

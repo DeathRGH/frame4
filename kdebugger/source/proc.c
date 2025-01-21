@@ -3,7 +3,7 @@
 
 struct proc *proc_find_by_name(const char *name) {
     int pcomm_offset = 0x454;
-    if (cachedFirmware == 505) {
+    if (cached_firmware == 505) {
         pcomm_offset = 0x44C;
     }
 
@@ -260,14 +260,14 @@ int proc_create_thread(struct proc *p, uint64_t address) {
         }
 
         if (!memcmp(entries[i].name, "libkernel.sprx", 14)) {
-            switch(cachedFirmware) {
+            switch(cached_firmware) {
                 case 505:
                     _scePthreadAttrInit = entries[i].start + 0x12660;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x12680;
                     _scePthreadCreate = entries[i].start + 0x12AA0;
                     _thr_initial = entries[i].start + 0x84C20;
                     break;
-				case 672:
+                case 672:
                     _scePthreadAttrInit = entries[i].start + 0x13A40;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x13A60;
                     _scePthreadCreate = entries[i].start + 0x13E80;
@@ -285,7 +285,7 @@ int proc_create_thread(struct proc *p, uint64_t address) {
                     _scePthreadCreate = entries[i].start + 0x13AA0;
                     _thr_initial = entries[i].start + 0x8E430;
                     break;
-				case 1100:
+                case 1100:
                     _scePthreadAttrInit = entries[i].start + 0x134A0;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x134C0;
                     _scePthreadCreate = entries[i].start + 0x138E0;
@@ -295,14 +295,14 @@ int proc_create_thread(struct proc *p, uint64_t address) {
             break;
         }
         if (!memcmp(entries[i].name, "libkernel_web.sprx", 18)) {
-            switch(cachedFirmware) {
+            switch(cached_firmware) {
                 case 505:
                     _scePthreadAttrInit = entries[i].start + 0x1E730;
                     _scePthreadAttrSetstacksize = entries[i].start + 0xFA80;
                     _scePthreadCreate = entries[i].start + 0x98C0;
                     _thr_initial = entries[i].start + 0x84C20;
                     break;
-				case 672:
+                case 672:
                     _scePthreadAttrInit = entries[i].start + 0x1FD20;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x10540;
                     _scePthreadCreate = entries[i].start + 0xA0F0;
@@ -320,7 +320,7 @@ int proc_create_thread(struct proc *p, uint64_t address) {
                     _scePthreadCreate = entries[i].start + 0x204C0;
                     _thr_initial = entries[i].start + 0x8E430;
                     break;
-				case 1100:
+                case 1100:
                     _scePthreadAttrInit = entries[i].start + 0x15990;
                     _scePthreadAttrSetstacksize = entries[i].start + 0xE800;
                     _scePthreadCreate = entries[i].start + 0x20D90;
@@ -330,14 +330,14 @@ int proc_create_thread(struct proc *p, uint64_t address) {
             break;
         }
         if (!memcmp(entries[i].name, "libkernel_sys.sprx", 18)) {
-            switch(cachedFirmware) {
+            switch(cached_firmware) {
                 case 505:
                     _scePthreadAttrInit = entries[i].start + 0x13190;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x131B0;
                     _scePthreadCreate = entries[i].start + 0x135D0;
                     _thr_initial = entries[i].start + 0x89030;
                     break;
-				case 672:
+                case 672:
                     _scePthreadAttrInit = entries[i].start + 0x14570;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x14590;
                     _scePthreadCreate = entries[i].start + 0x149B0;
@@ -355,7 +355,7 @@ int proc_create_thread(struct proc *p, uint64_t address) {
                     _scePthreadCreate = entries[i].start + 0x145D0;
                     _thr_initial = entries[i].start + 0x8E830;
                     break;
-				case 1100:
+                case 1100:
                     _scePthreadAttrInit = entries[i].start + 0x14010;
                     _scePthreadAttrSetstacksize = entries[i].start + 0x14030;
                     _scePthreadCreate = entries[i].start + 0x14450;
@@ -443,7 +443,7 @@ int proc_map_elf(struct proc *p, void *elf, void *exec) {
             }
         }
     }
-	else {
+    else {
         // use sections
         for (int i = 0; i < ehdr->e_shnum; i++) {
             struct Elf64_Shdr *shdr = elf_section(ehdr, i);

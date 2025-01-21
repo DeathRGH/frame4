@@ -10,14 +10,14 @@
 #include "kern.h"
 #include "console.h"
 
-#define SOCK_SERVER_PORT		2811
-#define UART_SERVER_PORT		3321
-#define HTTP_SERVER_PORT		2812
-#define SERVER_MAXCLIENTS		8
-#define UART_SERVER_MAXCLIENTS	1
+#define SOCK_SERVER_PORT        2811
+#define UART_SERVER_PORT        3321
+#define HTTP_SERVER_PORT        2812
+#define SERVER_MAXCLIENTS       8
+#define UART_SERVER_MAXCLIENTS  1
 
-#define BROADCAST_SERVER_PORT	2813
-#define BROADCAST_MAGIC			0xFFFFAAAA
+#define BROADCAST_SERVER_PORT   2813
+#define BROADCAST_MAGIC         0xFFFFAAAA
 
 extern struct server_client servclients[SERVER_MAXCLIENTS];
 extern struct uart_server_client uartservclients[UART_SERVER_MAXCLIENTS];

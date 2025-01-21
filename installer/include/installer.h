@@ -9,8 +9,8 @@
 
 // shared
 struct sys_proc_vm_map_args {
-	struct proc_vm_map_entry *maps;
-	uint64_t num;
+    struct proc_vm_map_entry *maps;
+    uint64_t num;
 } __attribute__((packed));
 
 int runinstaller();

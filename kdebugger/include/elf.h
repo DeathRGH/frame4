@@ -5,16 +5,16 @@
 
 #include <ksdk.h>
 
-#define ELF32_R_SYM(i)		((i)>>8)
-#define ELF32_R_TYPE(i)		((unsigned char)(i))
-#define ELF32_R_INFO(s,t)	(((s)<<8)+(unsigned char)(t))
+#define ELF32_R_SYM(i)      ((i)>>8)
+#define ELF32_R_TYPE(i)     ((unsigned char)(i))
+#define ELF32_R_INFO(s,t)   (((s)<<8)+(unsigned char)(t))
 
-#define ELF64_R_SYM(i)		((i)>>32)
-#define ELF64_R_TYPE(i)		((i)&0xffffffffL)
-#define ELF64_R_INFO(s,t)	(((s)<<32)+((t)&0xffffffffL))
+#define ELF64_R_SYM(i)      ((i)>>32)
+#define ELF64_R_TYPE(i)     ((i)&0xffffffffL)
+#define ELF64_R_INFO(s,t)   (((s)<<32)+((t)&0xffffffffL))
 
-typedef uint32_t Elf32_Addr;	// Program address
-typedef uint32_t Elf32_Off;		// File offset
+typedef uint32_t Elf32_Addr;    // Program address
+typedef uint32_t Elf32_Off;     // File offset
 typedef uint16_t Elf32_Half;
 typedef uint32_t Elf32_Word;
 typedef int32_t  Elf32_Sword;
@@ -32,17 +32,17 @@ static const char ElfMagic[] = { 0x7f, 'E', 'L', 'F', '\0' };
 
 // e_ident size and indices.
 enum {
-    EI_MAG0       = 0,	// File identification index.
-    EI_MAG1       = 1,	// File identification index.
-    EI_MAG2       = 2,	// File identification index.
-    EI_MAG3       = 3,	// File identification index.
-    EI_CLASS      = 4,	// File class.
-    EI_DATA       = 5,	// Data encoding.
-    EI_VERSION    = 6,	// File version.
-    EI_OSABI      = 7,	// OS/ABI identification.
-    EI_ABIVERSION = 8,	// ABI version.
-    EI_PAD        = 9,	// Start of padding bytes.
-    EI_NIDENT     = 16	// Number of bytes in e_ident.
+    EI_MAG0       = 0, // File identification index.
+    EI_MAG1       = 1, // File identification index.
+    EI_MAG2       = 2, // File identification index.
+    EI_MAG3       = 3, // File identification index.
+    EI_CLASS      = 4, // File class.
+    EI_DATA       = 5, // Data encoding.
+    EI_VERSION    = 6, // File version.
+    EI_OSABI      = 7, // OS/ABI identification.
+    EI_ABIVERSION = 8, // ABI version.
+    EI_PAD        = 9, // Start of padding bytes.
+    EI_NIDENT     = 16 // Number of bytes in e_ident.
 };
 
 struct Elf32_Ehdr {
@@ -83,13 +83,13 @@ struct Elf64_Ehdr {
 
 // File types
 enum {
-    ET_NONE   = 0,		// No file type
-    ET_REL    = 1,		// Relocatable file
-    ET_EXEC   = 2,		// Executable file
-    ET_DYN    = 3,		// Shared object file
-    ET_CORE   = 4,		// Core file
-    ET_LOPROC = 0xff00,	// Beginning of processor-specific codes
-    ET_HIPROC = 0xffff	// Processor-specific
+    ET_NONE   = 0,      // No file type
+    ET_REL    = 1,      // Relocatable file
+    ET_EXEC   = 2,      // Executable file
+    ET_DYN    = 3,      // Shared object file
+    ET_CORE   = 4,      // Core file
+    ET_LOPROC = 0xff00, // Beginning of processor-specific codes
+    ET_HIPROC = 0xffff  // Processor-specific
 };
 
 // Versioning

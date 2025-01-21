@@ -64,16 +64,16 @@ struct sockaddr {
 };
 
 struct SceHttpUriElement{
-	bool opaque;
-	char *scheme;
-	char *username;
-	char *password;
-	char *hostname;
-	char *path;
-	char *query;
-	char *fragment;
-	uint16_t port;
-	uint8_t reserved[10];
+    bool opaque;
+    char *scheme;
+    char *username;
+    char *password;
+    char *hostname;
+    char *path;
+    char *query;
+    char *fragment;
+    uint16_t port;
+    uint8_t reserved[10];
 };
 
 typedef unsigned int socklen_t;

@@ -16,7 +16,7 @@ int net_send_data(int fd, void *data, int length) {
         if (left > NET_MAX_LENGTH) {
             sent = write(fd, data + offset, NET_MAX_LENGTH);
         }
-		else {
+        else {
             sent = write(fd, data + offset, left);
         }
 
@@ -25,7 +25,7 @@ int net_send_data(int fd, void *data, int length) {
                 return sent;
             }
         }
-		else {
+        else {
             offset += sent;
             left -= sent;
         }
@@ -45,7 +45,7 @@ int net_recv_data(int fd, void *data, int length, int force) {
         if (left > NET_MAX_LENGTH) {
             recv = read(fd, data + offset, NET_MAX_LENGTH);
         }
-		else {
+        else {
             recv = read(fd, data + offset, left);
         }
 
@@ -55,11 +55,11 @@ int net_recv_data(int fd, void *data, int length, int force) {
                     return recv;
                 }
             }
-			else {
+            else {
                 return offset;
             }
         }
-		else {
+        else {
             offset += recv;
             left -= recv;
         }
@@ -76,8 +76,7 @@ int net_send_status(int fd, uint32_t status) {
 
 int (*vasprintf)(char **ret, const char *format, va_list ap);
 
-int fd_printf(int fd, const char *format, ...)
-{
+int fd_printf(int fd, const char *format, ...) {
     int libNet = sceKernelLoadStartModule("libSceLibcInternal.sprx", 0, NULL, 0, 0, 0);
     int (*vasprintf)(char **ret, const char *format, va_list ap);
 

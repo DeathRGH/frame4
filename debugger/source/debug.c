@@ -82,17 +82,17 @@ int debug_breakpt_handle(int fd, struct cmd_packet *packet) {
 
     struct debug_breakpoint *breakpoint = &curdbgctx->breakpoints[bp->index];
 
-	// check if breakpoint is active and we are about to set a new address
-	// if this is the case we should write back the original bytes first and disable it
-	if (breakpoint->enabled) {
-		if (breakpoint->address != bp->address) {
-			sys_proc_rw(curdbgctx->pid, breakpoint->address, &breakpoint->original, 1, 1);
+    // check if breakpoint is active and we are about to set a new address
+    // if this is the case we should write back the original bytes first and disable it
+    if (breakpoint->enabled) {
+        if (breakpoint->address != bp->address) {
+            sys_proc_rw(curdbgctx->pid, breakpoint->address, &breakpoint->original, 1, 1);
 
-			breakpoint->enabled = 0;
-			breakpoint->address = NULL;
-		}
-	}
-	// end of check for active breakpoint
+            breakpoint->enabled = 0;
+            breakpoint->address = NULL;
+        }
+    }
+    // end of check for active breakpoint
 
     if (bp->enabled) {
         breakpoint->enabled = 1;
@@ -103,7 +103,7 @@ int debug_breakpt_handle(int fd, struct cmd_packet *packet) {
         int3 = 0xCC;
         sys_proc_rw(curdbgctx->pid, breakpoint->address, &int3, 1, 1);
     }
-	else {
+    else {
         sys_proc_rw(curdbgctx->pid, breakpoint->address, &breakpoint->original, 1, 1);
 
         breakpoint->enabled = 0;
@@ -163,7 +163,7 @@ int debug_watchpt_handle(int fd, struct cmd_packet *packet) {
         dbreg64->dr[wp->index] = wp->address;
         dbreg64->dr[7] |= DBREG_DR7_SET(wp->index, wp->length, wp->breaktype, DBREG_DR7_LOCAL_ENABLE | DBREG_DR7_GLOBAL_ENABLE);
     }
-	else {
+    else {
         dbreg64->dr[wp->index] = NULL;
         dbreg64->dr[7] |= DBREG_DR7_SET(wp->index, NULL, NULL, DBREG_DR7_DISABLE);
     }

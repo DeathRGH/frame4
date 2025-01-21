@@ -1,5 +1,4 @@
 #include "hooks.h"
-
 #include "afr.h"
 
 inline void write_jmp(uint64_t address, uint64_t destination) {
@@ -15,7 +14,7 @@ inline void write_jmp(uint64_t address, uint64_t destination) {
 
 int sys_proc_list(struct thread *td, struct sys_proc_list_args *uap) {
     int pcomm_offset = 0x454;
-    if (cachedFirmware == 505) {
+    if (cached_firmware == 505) {
         pcomm_offset = 0x44C;
     }
 
@@ -40,7 +39,7 @@ int sys_proc_list(struct thread *td, struct sys_proc_list_args *uap) {
         
         *uap->num = num;
     }
-	else {
+    else {
         // fill structure
         num = *uap->num;
         p = *allproc;
@@ -108,7 +107,7 @@ int sys_proc_vm_map_handle(struct proc *p, struct sys_proc_vm_map_args *args) {
     if (!args->maps) {
         args->num = map->nentries;
     }
-	else {
+    else {
         if (vm_map_lookup_entry(map, NULL, &entry)) {
             vm_map_unlock_read(map);
             return 1;
@@ -236,7 +235,7 @@ int sys_proc_elf_handle(struct proc *p, struct sys_proc_elf_args *args) {
 }
 
 int sys_proc_info_handle(struct proc *p, struct sys_proc_info_args *args) {
-    if (cachedFirmware == 505) {
+    if (cached_firmware == 505) {
         struct proc_505 *castedProc = (struct proc_505 *)p;
         memcpy(args->name, castedProc->p_comm, sizeof(args->name));
         memcpy(args->path, castedProc->path, sizeof(args->path));
@@ -325,21 +324,21 @@ int sys_kern_base(struct thread *td, struct sys_kern_base_args *uap) {
 }
 
 int sys_kern_rw(struct thread *td, struct sys_kern_rw_args *uap) {
-	if (uap->write) {
-		cpu_disable_wp();
-		/*if (uap->address < get_kbase())
-			memset((void *)uap->data, NULL, uap->length);
-		else*/
-		memcpy((void *)uap->address, uap->data, uap->length);
-		cpu_enable_wp();
-	}
-	else {
-		//if (uap->address >= get_kbase())
-		memcpy(uap->data, (void *)uap->address, uap->length);
-	}
+    if (uap->write) {
+        cpu_disable_wp();
+        /*if (uap->address < get_kbase())
+            memset((void *)uap->data, NULL, uap->length);
+        else*/
+        memcpy((void *)uap->address, uap->data, uap->length);
+        cpu_enable_wp();
+    }
+    else {
+        //if (uap->address >= get_kbase())
+        memcpy(uap->data, (void *)uap->address, uap->length);
+    }
 
-	td->td_retval[0] = 0;
-	return 0;
+    td->td_retval[0] = 0;
+    return 0;
 }
 
 int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap) {
@@ -389,7 +388,7 @@ void hook_trap_fatal(struct trapframe *tf) {
     if ((tf->tf_rsp & 3) == 3) {
         sp = *(uint64_t *)(tf + 1);
     }
-	else {
+    else {
         sp = (uint64_t)(tf + 1);
     }
 
@@ -417,30 +416,30 @@ void install_syscall(uint32_t n, void *func) {
 }
 
 int install_hooks() {
-	cpu_disable_wp();
+    cpu_disable_wp();
 
-	// trap_fatal hook
-	//uint64_t kernbase = get_kbase();
-	//memcpy((void *)(kernbase + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
-	//write_jmp(kernbase + 0x1718DB, (uint64_t)hook_trap_fatal);
+    // trap_fatal hook
+    //uint64_t kernbase = get_kbase();
+    //memcpy((void *)(kernbase + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
+    //write_jmp(kernbase + 0x1718DB, (uint64_t)hook_trap_fatal);
 
     // proc
-	install_syscall(107, sys_proc_list);
-	install_syscall(108, sys_proc_rw);
-	install_syscall(109, sys_proc_cmd);
+    install_syscall(107, sys_proc_list);
+    install_syscall(108, sys_proc_rw);
+    install_syscall(109, sys_proc_cmd);
 
     // kern
-	install_syscall(110, sys_kern_base);
-	install_syscall(111, sys_kern_rw);
+    install_syscall(110, sys_kern_base);
+    install_syscall(111, sys_kern_rw);
 
     // console
-	install_syscall(112, sys_console_cmd);
+    install_syscall(112, sys_console_cmd);
 
-	cpu_enable_wp();
+    cpu_enable_wp();
 
-	if (install_afr_hooks()) {
-		return 1;
-	}
+    if (install_afr_hooks()) {
+        return 1;
+    }
 
-	return 0;
+    return 0;
 }

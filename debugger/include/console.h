@@ -1,5 +1,3 @@
-// cleaned 2022/07/29
-
 #ifndef _CONSOLE_H
 #define _CONSOLE_H
 

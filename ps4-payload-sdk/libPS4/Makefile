@@ -1,12 +1,12 @@
-CC	:= gcc
-AR	:= ar
-ODIR	:= build
-SDIR	:= source
-IDIR	:= include
-CFLAGS	:= -I$(IDIR) -Os -std=gnu11 -ffunction-sections -fdata-sections -fno-builtin -nostartfiles -nostdlib -Wall -masm=intel -march=btver2 -mtune=btver2 -m64 -mabi=sysv -mcmodel=small -fpie
-CFILES	:= $(wildcard $(SDIR)/*.c)
-SFILES	:= $(wildcard $(SDIR)/*.s)
-OBJS	:= $(patsubst $(SDIR)/%.c, build/%.o, $(CFILES)) $(patsubst $(SDIR)/%.s, build/%.o, $(SFILES))
+CC      := gcc
+AR      := ar
+ODIR    := build
+SDIR    := source
+IDIR    := include
+CFLAGS  := -I$(IDIR) -Os -std=gnu11 -ffunction-sections -fdata-sections -fno-builtin -nostartfiles -nostdlib -Wall -masm=intel -march=btver2 -mtune=btver2 -m64 -mabi=sysv -mcmodel=small -fpie
+CFILES  := $(wildcard $(SDIR)/*.c)
+SFILES  := $(wildcard $(SDIR)/*.s)
+OBJS    := $(patsubst $(SDIR)/%.c, build/%.o, $(CFILES)) $(patsubst $(SDIR)/%.s, build/%.o, $(SFILES))
 
 TARGET = libPS4.a
 

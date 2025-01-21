@@ -5,13 +5,13 @@
 
 #include <ksdk.h>
 
-#define ELF32_R_SYM(i)	((i)>>8)
-#define ELF32_R_TYPE(i)   ((unsigned char)(i))
-#define ELF32_R_INFO(s,t) (((s)<<8)+(unsigned char)(t))
+#define ELF32_R_SYM(i)      ((i)>>8)
+#define ELF32_R_TYPE(i)     ((unsigned char)(i))
+#define ELF32_R_INFO(s,t)   (((s)<<8)+(unsigned char)(t))
 
-#define ELF64_R_SYM(i)    ((i)>>32)
-#define ELF64_R_TYPE(i)   ((i)&0xffffffffL)
-#define ELF64_R_INFO(s,t) (((s)<<32)+((t)&0xffffffffL))
+#define ELF64_R_SYM(i)      ((i)>>32)
+#define ELF64_R_TYPE(i)     ((i)&0xffffffffL)
+#define ELF64_R_INFO(s,t)   (((s)<<32)+((t)&0xffffffffL))
 
 typedef uint32_t Elf32_Addr; // Program address
 typedef uint32_t Elf32_Off;  // File offset
@@ -1179,29 +1179,29 @@ enum {
 
 // Symbol bindings.
 enum {
-    STB_LOCAL = 0,   // Local symbol, not visible outside obj file containing def
-    STB_GLOBAL = 1,  // Global symbol, visible to all object files being combined
-    STB_WEAK = 2,    // Weak symbol, like global but lower-precedence
-    STB_LOOS   = 10, // Lowest operating system-specific binding type
-    STB_HIOS   = 12, // Highest operating system-specific binding type
-    STB_LOPROC = 13, // Lowest processor-specific binding type
-    STB_HIPROC = 15  // Highest processor-specific binding type
+    STB_LOCAL   = 0,   // Local symbol, not visible outside obj file containing def
+    STB_GLOBAL  = 1,  // Global symbol, visible to all object files being combined
+    STB_WEAK    = 2,    // Weak symbol, like global but lower-precedence
+    STB_LOOS    = 10, // Lowest operating system-specific binding type
+    STB_HIOS    = 12, // Highest operating system-specific binding type
+    STB_LOPROC  = 13, // Lowest processor-specific binding type
+    STB_HIPROC  = 15  // Highest processor-specific binding type
 };
 
 // Symbol types.
 enum {
-    STT_NOTYPE  = 0,   // Symbol's type is not specified
-    STT_OBJECT  = 1,   // Symbol is a data object (variable, array, etc.)
-    STT_FUNC    = 2,   // Symbol is executable code (function, etc.)
-    STT_SECTION = 3,   // Symbol refers to a section
-    STT_FILE    = 4,   // Local, absolute symbol that refers to a file
-    STT_COMMON  = 5,   // An uninitialized common block
-    STT_TLS     = 6,   // Thread local data object
-    STT_LOOS    = 7,   // Lowest operating system-specific symbol type
-    STT_HIOS    = 8,   // Highest operating system-specific symbol type
-    STT_GNU_IFUNC = 10, // GNU indirect function
-    STT_LOPROC  = 13,  // Lowest processor-specific symbol type
-    STT_HIPROC  = 15   // Highest processor-specific symbol type
+    STT_NOTYPE      = 0,   // Symbol's type is not specified
+    STT_OBJECT      = 1,   // Symbol is a data object (variable, array, etc.)
+    STT_FUNC        = 2,   // Symbol is executable code (function, etc.)
+    STT_SECTION     = 3,   // Symbol refers to a section
+    STT_FILE        = 4,   // Local, absolute symbol that refers to a file
+    STT_COMMON      = 5,   // An uninitialized common block
+    STT_TLS         = 6,   // Thread local data object
+    STT_LOOS        = 7,   // Lowest operating system-specific symbol type
+    STT_HIOS        = 8,   // Highest operating system-specific symbol type
+    STT_GNU_IFUNC   = 10, // GNU indirect function
+    STT_LOPROC      = 13,  // Lowest processor-specific symbol type
+    STT_HIPROC      = 15   // Highest processor-specific symbol type
 };
 
 enum {
@@ -1439,13 +1439,12 @@ enum {
     VER_NEED_CURRENT = 1
 };
 
-
 // error codes
-#define LDR_SUCCESS			0
-#define LDR_INVALID_ELF		1
-#define LDR_SIZE_ERROR		2
-#define LDR_MAP_ERROR		3
-#define LDR_RELOC_ERROR		4
+#define LDR_SUCCESS     0
+#define LDR_INVALID_ELF 1
+#define LDR_SIZE_ERROR  2
+#define LDR_MAP_ERROR   3
+#define LDR_RELOC_ERROR 4
 
 static inline struct Elf64_Phdr *elf_pheader(struct Elf64_Ehdr *hdr) {
     if (!hdr->e_phoff) {
