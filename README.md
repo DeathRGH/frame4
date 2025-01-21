@@ -36,11 +36,11 @@ A ps4debug edit used with PS4 Toolbox.
 - [ ] Move away from the multi compilation setup and merge everything (similar to what has been done for ps5debug by Dizz)
 - [ ] Implement sprx loading without relying on goldhen
 - [ ] Fix on-console scanner
-- [ ] Stop hijacking shell core and instead create our own process
+- [ ] Stop hijacking ShellCore and instead create our own process
 - [ ] Move stuff to userland that doesn't need to be in kernel
 
 ### Backtrace Hooks
-Adds detailed info on the crash logs so you never have to calculate a module offset anymore.
+Adds detailed info on the crash logs so you never have to calculate a module offset again.
 ```
 ...
 #
