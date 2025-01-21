@@ -464,6 +464,62 @@ void hook_trap_fatal(struct trapframe *tf) {
     kern_reboot(4);
 }
 
+struct k_module_info {
+    struct k_module_info *next; // 0x00
+    const char *name;           // 0x08
+    char pad_0x10[0x20];
+    uint64_t text_start;        // 0x30
+    char pad_0x38[0x08];
+    uint64_t text_size;         // 0x40
+    uint64_t data_start;        // 0x48
+    uint64_t data_size;         // 0x50
+    // ...
+    // fingerprint at 0x158
+};
+
+__attribute__((naked)) void md_display_dump_hook() {
+    uint64_t rcx;
+    __asm__ ("movq %0, %%rcx" : "=r" (rcx) : : "memory");
+
+    uint64_t module_offset = 0;
+    const char *module_name = "unknown_module";
+
+    struct thread *cur_thread = curthread();
+    if (cur_thread) {
+        uint64_t rax = *(uint64_t *)(((uint64_t)cur_thread) + 0x08);
+        if (rax) {
+            rax = *(uint64_t *)(rax + 0x340);
+            if (rax) {
+                rax = *(uint64_t *)rax;
+                if (rax) {
+                    struct k_module_info *info = (struct k_module_info *)rax;
+                    while (info) {
+                        uint64_t data_end = info->data_start + info->data_size;
+                        if ((rcx < data_end) && (rcx > info->text_start)) {
+                            module_offset = rcx - info->text_start;
+                            module_name = info->name;
+                            break;
+                        }
+
+                        info = info->next;
+                    }
+                }
+            }
+        }
+    }
+    
+    printf("# %016lX <%s> + %lX\n", rcx, module_name, module_offset);
+    __asm__ volatile (
+        "mov ecx, 0xC0000082 \n"  // Read LSTAR MSR (syscall entry point)
+        "rdmsr \n"
+        "shl rdx, 32 \n"
+        "or rax, rdx \n"
+        "sub rax, 0x1C0 \n"  // Get kernel base
+        "add rax, 0x315EC3 \n" // Add offset for the return address
+        "jmp rax \n"  // Jump back to the function
+    );
+}
+
 void install_syscall(uint32_t n, void *func) {
     struct sysent *p = &sysents[n];
     memset(p, NULL, sizeof(struct sysent));
@@ -479,6 +535,12 @@ int install_hooks() {
     //uint64_t kernbase = get_kbase();
     //memcpy((void *)(kernbase + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
     //write_jmp(kernbase + 0x1718DB, (uint64_t)hook_trap_fatal);
+
+    if (cached_firmware == 900) {
+        // md_display_dump hook
+        uint64_t kernel_base = get_kbase();
+        write_jmp(kernel_base + 0x315EB1, (uint64_t)md_display_dump_hook);
+    }
 
     // proc
     install_syscall(107, sys_proc_list);
