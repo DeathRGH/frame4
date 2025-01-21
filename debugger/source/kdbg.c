@@ -1,11 +1,11 @@
 #include "kdbg.h"
 
 void prefault(void *address, size_t size) {
-    for(uint64_t i = 0; i < size; i++) {
-        volatile uint8_t c;
-        (void)c;
-        
-        c = ((char *)address)[i];
+    volatile uint8_t *ptr = (uint8_t *)address;
+
+    // only touching a single byte within each page ensures that the entire page is allocated
+    for(uint64_t i = 0; i < size; i += PAGE_SIZE) {
+        (void)ptr[i];
     }
 }
 
