@@ -74,7 +74,7 @@ void cpu_disable_wp(void)
 }
 
 static inline __attribute__((always_inline))
-void* curthread(void)
+void *curthread(void)
 {
     uint64_t td;
     __asm__ ("movq %0, %%gs:0" : "=r" (td) : : "memory");
