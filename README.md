@@ -45,13 +45,12 @@ Adds detailed info on the crash logs so you never have to calculate a module off
 ...
 #
 # backtrace:
-copyin: Cinematic has nonsleeping lock
-# 0000000000BB7BF1 </data/default_mp.elf> + 7B7BF1
-# 0000000000B924EA </data/default_mp.elf> + 7924EA
-# 00000000009D75A4 </data/default_mp.elf> + 5D75A4
-# 000000000083BE99 </data/default_mp.elf> + 43BE99
-# 00000008000075C2 </i8fsuSWSEf/common/lib/libkernel.sprx> + 75C2
-# 0000000000000000 <unknown_module> + 0
+# 0x0000000000BB7BF1 </data/default_mp.elf> + 0x7B7BF1
+# 0x0000000000B924EA </data/default_mp.elf> + 0x7924EA
+# 0x00000000009D75A4 </data/default_mp.elf> + 0x5D75A4
+# 0x000000000083BE99 </data/default_mp.elf> + 0x43BE99
+# 0x00000008000075C2 </i8fsuSWSEf/common/lib/libkernel.sprx> + 0x75C2
+# 0x0000000000000000
 #
 ...
 ```
