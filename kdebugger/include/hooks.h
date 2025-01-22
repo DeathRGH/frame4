@@ -130,9 +130,19 @@ struct sys_console_cmd_args {
 } __attribute__((packed));
 int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap);
 
-void hook_trap_fatal(struct trapframe *tf);
+struct k_module_info {
+    struct k_module_info *next; // 0x00
+    const char *name;           // 0x08
+    char pad_0x10[0x20];
+    uint64_t text_start;        // 0x30
+    char pad_0x38[0x08];
+    uint64_t text_size;         // 0x40
+    uint64_t data_start;        // 0x48
+    uint64_t data_size;         // 0x50
+    // ...
+    // fingerprint at 0x158
+};
 
-void install_syscall(uint32_t n, void *func);
 int install_hooks();
 
 #endif

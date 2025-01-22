@@ -464,19 +464,6 @@ void hook_trap_fatal(struct trapframe *tf) {
     kern_reboot(4);
 }
 
-struct k_module_info {
-    struct k_module_info *next; // 0x00
-    const char *name;           // 0x08
-    char pad_0x10[0x20];
-    uint64_t text_start;        // 0x30
-    char pad_0x38[0x08];
-    uint64_t text_size;         // 0x40
-    uint64_t data_start;        // 0x48
-    uint64_t data_size;         // 0x50
-    // ...
-    // fingerprint at 0x158
-};
-
 __attribute__((naked)) void md_display_dump_hook() {
     uint64_t rcx;
     __asm__ ("movq %0, %%rcx" : "=r" (rcx) : : "memory");
@@ -508,7 +495,13 @@ __attribute__((naked)) void md_display_dump_hook() {
         }
     }
     
-    printf("# %016lX <%s> + %lX\n", rcx, module_name, module_offset);
+    if (module_offset == 0) {
+        printf("# 0x%016lX\n", rcx);
+    }
+    else {
+        printf("# 0x%016lX <%s> + 0x%lX\n", rcx, module_name, module_offset);
+    }
+
     __asm__ volatile (
         "mov ecx, 0xC0000082 \n"  // Read LSTAR MSR (syscall entry point)
         "rdmsr \n"
