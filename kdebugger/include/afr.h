@@ -30,9 +30,6 @@ struct hook_data {
     struct syscall_stat *statData_at;
 };
 
-int sys_open_hook(struct thread *td, struct syscall_open *args);
-int sys_openat_hook(struct thread *td, struct syscall_openat *args);
-
 int install_afr_hooks();
 
 #endif

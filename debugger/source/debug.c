@@ -4,6 +4,33 @@ int g_debugging;
 struct server_client *curdbgcli;
 struct debug_context *curdbgctx;
 
+int connect_debugger(struct debug_context *dbgctx, struct sockaddr_in *client) {
+    struct sockaddr_in server;
+    int r;
+
+    // we are now debugging
+    g_debugging = 1;
+
+    // connect to server
+    server.sin_len = sizeof(server);
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = client->sin_addr.s_addr;
+    server.sin_port = sceNetHtons(DEBUG_PORT);
+    memset(server.sin_zero, NULL, sizeof(server.sin_zero));
+
+    dbgctx->dbgfd = sceNetSocket("interrupt", AF_INET, SOCK_STREAM, 0);
+    if (dbgctx->dbgfd <= 0) {
+        return 1;
+    }
+
+    r = sceNetConnect(dbgctx->dbgfd, (struct sockaddr *)&server, sizeof(server));
+    if (r) {
+        return 1;
+    }
+
+    return 0;
+}
+
 int debug_attach_handle(int fd, struct cmd_packet *packet) {
     struct cmd_debug_attach_packet *ap;
     int r;
@@ -543,33 +570,6 @@ int debug_singlestep_handle(int fd, struct cmd_packet *packet) {
     
     net_send_status(fd, CMD_SUCCESS);
     
-    return 0;
-}
-
-int connect_debugger(struct debug_context *dbgctx, struct sockaddr_in *client) {
-    struct sockaddr_in server;
-    int r;
-
-    // we are now debugging
-    g_debugging = 1;
-
-    // connect to server
-    server.sin_len = sizeof(server);
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = client->sin_addr.s_addr;
-    server.sin_port = sceNetHtons(DEBUG_PORT);
-    memset(server.sin_zero, NULL, sizeof(server.sin_zero));
-
-    dbgctx->dbgfd = sceNetSocket("interrupt", AF_INET, SOCK_STREAM, 0);
-    if (dbgctx->dbgfd <= 0) {
-        return 1;
-    }
-
-    r = sceNetConnect(dbgctx->dbgfd, (struct sockaddr *)&server, sizeof(server));
-    if (r) {
-        return 1;
-    }
-
     return 0;
 }
 

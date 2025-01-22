@@ -252,7 +252,7 @@ TYPE_FIELD(char p_comm[32], 0x44C);
 TYPE_FIELD(char path[64], 0x46C);
 TYPE_END();
 
-TYPE_BEGIN(struct proc, 0x800); // XXX: random, don't use directly without fixing it
+TYPE_BEGIN(struct proc, 0xB68);
 TYPE_FIELD(struct proc *p_forw, 0);
 TYPE_FIELD(TAILQ_HEAD(, thread) p_threads, 0x10);
 TYPE_FIELD(struct ucred *p_ucred, 0x40);

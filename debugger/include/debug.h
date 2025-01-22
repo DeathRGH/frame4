@@ -141,26 +141,7 @@ extern int g_debugging;
 extern struct server_client *curdbgcli;
 extern struct debug_context *curdbgctx;
 
-int debug_attach_handle(int fd, struct cmd_packet *packet);
-int debug_detach_handle(int fd, struct cmd_packet *packet);
-int debug_breakpt_handle(int fd, struct cmd_packet *packet);
-int debug_watchpt_handle(int fd, struct cmd_packet *packet);
-int debug_threads_handle(int fd, struct cmd_packet *packet);
-int debug_stopthr_handle(int fd, struct cmd_packet *packet);
-int debug_resumethr_handle(int fd, struct cmd_packet *packet);
-int debug_getregs_handle(int fd, struct cmd_packet *packet);
-int debug_setregs_handle(int fd, struct cmd_packet *packet);
-int debug_getfpregs_handle(int fd, struct cmd_packet *packet);
-int debug_setfpregs_handle(int fd, struct cmd_packet *packet);
-int debug_getdbregs_handle(int fd, struct cmd_packet *packet);
-int debug_setdbregs_handle(int fd, struct cmd_packet *packet);
-int debug_stopgo_handle(int fd, struct cmd_packet *packet);
-int debug_thrinfo_handle(int fd, struct cmd_packet *packet);
-int debug_singlestep_handle(int fd, struct cmd_packet *packet);
-
-int connect_debugger(struct debug_context *dbgctx, struct sockaddr_in *client);
 void debug_cleanup(struct debug_context *dbgctx);
-
 int debug_handle(int fd, struct cmd_packet *packet);
 
 #endif

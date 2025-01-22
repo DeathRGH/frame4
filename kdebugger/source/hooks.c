@@ -383,14 +383,10 @@ int sys_kern_base(struct thread *td, struct sys_kern_base_args *uap) {
 int sys_kern_rw(struct thread *td, struct sys_kern_rw_args *uap) {
     if (uap->write) {
         cpu_disable_wp();
-        /*if (uap->address < get_kbase())
-            memset((void *)uap->data, NULL, uap->length);
-        else*/
         memcpy((void *)uap->address, uap->data, uap->length);
         cpu_enable_wp();
     }
     else {
-        //if (uap->address >= get_kbase())
         memcpy(uap->data, (void *)uap->address, uap->length);
     }
 
@@ -471,7 +467,7 @@ __attribute__((naked)) void md_display_dump_hook() {
     uint64_t module_offset = 0;
     const char *module_name = "unknown_module";
 
-    struct thread *cur_thread = curthread();
+    struct thread *cur_thread = curthread(); // gs:0
     if (cur_thread) {
         uint64_t rax = *(uint64_t *)(((uint64_t)cur_thread) + 0x08);
         if (rax) {
@@ -502,14 +498,15 @@ __attribute__((naked)) void md_display_dump_hook() {
         printf("# 0x%016lX <%s> + 0x%lX\n", rcx, module_name, module_offset);
     }
 
+    // get kernel base, calculate jump back address and jump
     __asm__ volatile (
-        "mov ecx, 0xC0000082 \n"  // Read LSTAR MSR (syscall entry point)
+        "mov ecx, 0xC0000082 \n"
         "rdmsr \n"
         "shl rdx, 32 \n"
         "or rax, rdx \n"
-        "sub rax, 0x1C0 \n"  // Get kernel base
-        "add rax, 0x315EC3 \n" // Add offset for the return address
-        "jmp rax \n"  // Jump back to the function
+        "sub rax, 0x1C0 \n"
+        "add rax, 0x315EC3 \n"
+        "jmp rax \n"
     );
 }
 

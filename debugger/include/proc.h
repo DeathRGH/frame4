@@ -14,23 +14,6 @@ struct proc_vm_map_entry {
     uint16_t prot;
 } __attribute__((packed));
 
-int proc_list_handle(int fd, struct cmd_packet *packet);
-int proc_read_handle(int fd, struct cmd_packet *packet);
-int proc_write_handle(int fd, struct cmd_packet *packet);
-int proc_maps_handle(int fd, struct cmd_packet *packet);
-int proc_install_handle(int fd, struct cmd_packet *packet);
-int proc_call_handle(int fd, struct cmd_packet *packet);
-int proc_protect_handle(int fd, struct cmd_packet *packet);
-int proc_scan_handle(int fd, struct cmd_packet *packet);
-int proc_info_handle(int fd, struct cmd_packet *packet);
-int proc_alloc_handle(int fd, struct cmd_packet *packet);
-int proc_free_handle(int fd, struct cmd_packet *packet);
-int proc_scan_get_results_handle(int fd, struct cmd_packet *packet);
-int proc_scan_count_results_handle(int fd, struct cmd_packet *packet);
-int proc_prx_load_handle(int fd, struct cmd_packet *packet);
-int proc_prx_unload_handle(int fd, struct cmd_packet *packet);
-int proc_prx_list_handle(int fd, struct cmd_packet *packet);
-
 int proc_handle(int fd, struct cmd_packet *packet);
 
 #endif

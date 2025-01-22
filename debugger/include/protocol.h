@@ -84,6 +84,8 @@ struct cmd_packet {
 } __attribute__((packed));
 #define CMD_PACKET_SIZE 12
 
+
+
 // proc
 struct cmd_proc_read_packet {
     uint32_t pid;
@@ -226,6 +228,8 @@ struct cmd_proc_free_packet {
 } __attribute__((packed));
 #define CMD_PROC_FREE_PACKET_SIZE 16
 
+
+
 // prx
 struct cmd_proc_prx_load_response {
     uint32_t prx_handle;
@@ -239,6 +243,8 @@ struct cmd_proc_prx_list_packet {
     uint32_t pid;
 } __attribute__((packed));
 #define CMD_PROC_PRX_LIST_PACKET_SIZE 4
+
+
 
 // debug
 struct cmd_debug_attach_packet {
@@ -300,46 +306,6 @@ struct cmd_debug_thrinfo_response {
 #define CMD_DEBUG_THRINFO_PACKET_SIZE 4
 #define CMD_DEBUG_THRINFO_RESPONSE_SIZE 40
 
-// kern
-struct cmd_kern_read_packet {
-    uint64_t address;
-    uint32_t length;
-} __attribute__((packed));
-#define CMD_KERN_READ_PACKET_SIZE 12
-
-struct cmd_kern_write_packet {
-    uint64_t address;
-    uint32_t length;
-} __attribute__((packed));
-#define CMD_KERN_WRITE_PACKET_SIZE 12
-
-// console
-struct cmd_console_print_packet {
-    uint32_t length;
-} __attribute__((packed));
-#define CMD_CONSOLE_PRINT_PACKET_SIZE 4
-
-struct cmd_console_notify_packet {
-    uint32_t messageType;
-    uint32_t length;
-} __attribute__((packed));
-#define CMD_CONSOLE_NOTIFY_PACKET_SIZE 8
-
-struct cmd_console_info_response {
-    char kern_ostype[50];
-    char kern_osrelease[50];
-    int kern_osrev;
-    char kern_version[100];
-    char hw_model[100];
-    int hw_ncpu;
-} __attribute__((packed));
-#define CMD_CONSOLE_INFO_RESPONSE_SIZE 308
-
-struct cmd_console_fanthreshold_packet {
-    uint8_t temperature;
-} __attribute__((packed));
-#define CMD_CONSOLE_FANTHRESHOLD_PACKET_SIZE 1
-
 #define MAX_BREAKPOINTS 30
 #define MAX_WATCHPOINTS 4
 
@@ -347,13 +313,6 @@ struct debug_breakpoint {
     uint32_t enabled;
     uint64_t address;
     uint8_t original;
-};
-
-struct debug_watchpoint {
-    uint32_t enabled;
-    uint64_t address;
-    uint8_t breaktype;
-    uint8_t length;
 };
 
 struct debug_context {
