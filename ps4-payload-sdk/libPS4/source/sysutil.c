@@ -3,7 +3,6 @@
 #include "sysutil.h"
 
 int (*sceSysUtilSendSystemNotificationWithText)(int messageType, char *message);
-int (*sceSystemServiceLaunchWebBrowser)(const char *uri, void *);
 int (*sceUserServiceInitialize)(void *);
 int (*sceUserServiceGetLoginUserIdList)(SceUserServiceLoginUserIdList *);
 int (*sceUserServiceGetUserName)(int32_t userId, char *userName, const size_t size);
@@ -13,19 +12,7 @@ int (*sceKernelReboot)();
 
 void initSysUtil(void) {
   int sysUtilHandle = sceKernelLoadStartModule("/system/common/lib/libSceSysUtil.sprx", 0, NULL, 0, 0, 0);
-  int libSceSystemService = sceKernelLoadStartModule("/system/common/lib/libSceSystemService.sprx", 0, NULL, 0, 0, 0);
   RESOLVE(sysUtilHandle, sceSysUtilSendSystemNotificationWithText);
-  RESOLVE(libSceSystemService, sceSystemServiceLaunchWebBrowser);
-}
-
-void systemMessage(char *msg) {
-  char buffer[512];
-  sprintf(buffer, "%s", msg);
-  sceSysUtilSendSystemNotificationWithText(0xDE, buffer);
-}
-
-void openBrowser(char *uri) {
-  sceSystemServiceLaunchWebBrowser(uri, NULL);
 }
 
 SceUserServiceLoginUserIdList getUserIDList() {
