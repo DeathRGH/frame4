@@ -305,25 +305,25 @@ void patch_1100(uint64_t kernbase) {
 }
 
 void patch_kernel() {
-    uint64_t kernbase = get_kbase();
+    uint64_t kernel_base = get_kernel_base();
 
     cpu_disable_wp();
 
     switch (cached_firmware) {
         case 505:
-            patch_505(kernbase);
+            patch_505(kernel_base);
             break;
         case 672:
-            patch_672(kernbase);
+            patch_672(kernel_base);
             break;
         case 702:
-            patch_702(kernbase);
+            patch_702(kernel_base);
             break;
         case 900:
-            patch_900(kernbase);
+            patch_900(kernel_base);
             break;
         case 1100:
-            patch_1100(kernbase);
+            patch_1100(kernel_base);
             break;
     }
 

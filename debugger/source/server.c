@@ -23,8 +23,9 @@ void free_client(struct server_client *svc) {
     svc->id = 0;
     sceNetSocketClose(svc->fd);
 
-    if (svc->debugging)
+    if (svc->debugging) {
         debug_cleanup(&svc->dbgctx);
+    }
 
     memset(svc, NULL, sizeof(struct server_client));
 }
@@ -73,23 +74,28 @@ int unload_handle(int fd, struct cmd_packet *packet) {
 }
 
 int cmd_handler(int fd, struct cmd_packet *packet) {
-    if (!VALID_CMD(packet->cmd))
+    if (!VALID_CMD(packet->cmd)) {
         return 1;
+    }
 
-    //uprintf("cmd_handler %X", packet->cmd);
-
-    if (packet->cmd == CMD_VERSION)
+    if (packet->cmd == CMD_VERSION) {
         return handle_version(fd, packet);
-    if (packet->cmd == CMD_UNLOAD)
+    }
+    if (packet->cmd == CMD_UNLOAD) {
         return unload_handle(fd, packet);
-    if (VALID_PROC_CMD(packet->cmd))
+    }
+    if (VALID_PROC_CMD(packet->cmd)) {
         return proc_handle(fd, packet);
-    else if (VALID_DEBUG_CMD(packet->cmd))
+    }
+    else if (VALID_DEBUG_CMD(packet->cmd)) {
         return debug_handle(fd, packet);
-    else if (VALID_KERN_CMD(packet->cmd))
+    }
+    else if (VALID_KERN_CMD(packet->cmd)) {
         return kern_handle(fd, packet);
-    else if (VALID_CONSOLE_CMD(packet->cmd))
+    }
+    else if (VALID_CONSOLE_CMD(packet->cmd)) {
         return console_handle(fd, packet);
+    }
 
     return 0;
 }
@@ -104,11 +110,11 @@ int check_debug_interrupt() {
     int r;
 
     r = wait4(curdbgctx->pid, &status, WNOHANG, NULL);
-    if (!r)
+    if (!r) {
         return 0;
+    }
 
     signal = WSTOPSIG(status);
-    //uprintf("check_debug_interrupt signal %i", signal);
 
     // ##########################################################################
     //uint64_t num;
@@ -205,9 +211,6 @@ int check_debug_interrupt() {
     }
 
     if (breakpoint) {
-        //uprintf("dealing with software breakpoint");
-        //uprintf("breakpoint: %llX %X", breakpoint->address, breakpoint->original);
-
         // write old instruction
         sys_proc_rw(curdbgctx->pid, breakpoint->address, &breakpoint->original, 1, 1);
 
@@ -217,23 +220,22 @@ int check_debug_interrupt() {
 
         // single step over the instruction
         ptrace(PT_STEP, resp.lwpid, (void *)1, NULL);
-        while (!wait4(curdbgctx->pid, &status, WNOHANG, NULL))
+        while (!wait4(curdbgctx->pid, &status, WNOHANG, NULL)) {
             sceKernelUsleep(4000);
-
-        //uprintf("waited for signal %i", WSTOPSIG(status));
+        }
 
         // set breakpoint again
         int3 = 0xCC;
         sys_proc_rw(curdbgctx->pid, breakpoint->address, &int3, 1, 1);
     }
-    else
+    else {
         uprintf("dealing with hardware breakpoint");
+    }
 
     r = net_send_data(curdbgctx->dbgfd, &resp, DEBUG_INTERRUPT_PACKET_SIZE);
-    if (r != DEBUG_INTERRUPT_PACKET_SIZE)
+    if (r != DEBUG_INTERRUPT_PACKET_SIZE) {
         uprintf("net_send_data failed %i %i", r, errno);
-
-    //uprintf("check_debug_interrupt interrupt data sent");
+    }
 
     free(lwpinfo);
 
@@ -255,9 +257,10 @@ int handle_socket_client(struct server_client *svc) {
     memset(&tv, NULL, sizeof(tv));
     tv.tv_usec = 1000;
 
-    while (1) {
-        if (unload_cmd_sent)
+    while (true) {
+        if (unload_cmd_sent) {
             break;
+        }
 
         // do a select
         fd_set sfd;
@@ -275,24 +278,28 @@ int handle_socket_client(struct server_client *svc) {
             rsize = net_recv_data(fd, &packet, CMD_PACKET_SIZE, 0);
 
             // if we didnt recieve hmm
-            if (rsize <= 0)
+            if (rsize <= 0) {
                 goto error;
+            }
 
             // check if disconnected
-            if (errno == ECONNRESET)
+            if (errno == ECONNRESET) {
                 goto error;
+            }
         }
         else {
             // if we have a valid debugger context then check for interrupt
             // this does not block, as wait is called with option WNOHANG
             if (svc->debugging) {
-                if (check_debug_interrupt())
+                if (check_debug_interrupt()) {
                     goto error;
+                }
             }
 
             // check if disconnected
-            if (errno == ECONNRESET)
+            if (errno == ECONNRESET) {
                 goto error;
+            }
 
             // time the handler sleeps in between packets
             // tested with 1ms but gave inconsistency
@@ -300,8 +307,6 @@ int handle_socket_client(struct server_client *svc) {
             sceKernelUsleep(2000); // was 25000
             continue;
         }
-
-        //uprintf("client packet recieved");
 
         // invalid packet
         if (packet.magic != PACKET_MAGIC) {
@@ -319,15 +324,15 @@ int handle_socket_client(struct server_client *svc) {
         if (length) {
             // allocate data
             data = pfmalloc(length);
-            if (!data)
+            if (!data) {
                 goto error;
-
-            //uprintf("recieving data length %i", length);
+            }
 
             // recv data
             r = net_recv_data(fd, data, length, 1);
-            if (!r)
+            if (!r) {
                 goto error;
+            }
 
             // set data
             packet.data = data;
@@ -351,8 +356,9 @@ int handle_socket_client(struct server_client *svc) {
         }
 
         // check cmd handler error
-        if (r)
+        if (r) {
             goto error;
+        }
     }
 
 error:
@@ -417,7 +423,7 @@ void *broadcast_thread(void *arg) {
     RESOLVE(libNet, sceNetRecvfrom);
     RESOLVE(libNet, sceNetSendto);
 
-    while (1) {
+    while (true) {
         if (unload_cmd_sent) {
             break;
         }
@@ -492,7 +498,7 @@ int start_server() {
     curdbgcli = NULL;
     curdbgctx = NULL;
 
-    while (1) {
+    while (true) {
         if (unload_cmd_sent) {
             break;
         }
@@ -535,10 +541,12 @@ int start_server() {
 void send_web_data(int fd, const char *data, bool success) {
     int size = strlen(data);
 
-    if (success)
+    if (success) {
         fd_printf(fd, "HTTP/1.1 200 OK\r\n");
-    else
+    }
+    else {
         fd_printf(fd, "HTTP/1.1 400 Bad Request\r\n");
+    }
 
     fd_printf(fd, "Content-Type: application/json\r\n");
     fd_printf(fd, "Access-Control-Allow-Origin: *\r\n");
@@ -547,8 +555,9 @@ void send_web_data(int fd, const char *data, bool success) {
     ssize_t bytes_sent;
     while (size > 0) {
         bytes_sent = write(fd, data, size);
-        if (bytes_sent < 0)
+        if (bytes_sent < 0) {
             return;
+        }
 
         size -= bytes_sent;
         data += bytes_sent;
@@ -666,8 +675,9 @@ void handle_web_process_list(int fd) {
     if (num > 0) {
         length = sizeof(struct proc_list_entry) * num;
         data = pfmalloc(length);
-        if (!data)
+        if (!data) {
             return;
+        }
             
         sys_proc_list(data, &num);
         struct proc_list_entry *entries = (struct proc_list_entry *)((struct proc_list_entry **)data);
@@ -782,8 +792,9 @@ void handle_web_client(int fd) {
 
     char *requestHeaderPart = strtok(requestHeader, " ");
     while (requestHeaderPart != NULL) {
-        if (strstr(requestHeaderPart, "/") != NULL)
+        if (strstr(requestHeaderPart, "/") != NULL) {
             break;
+        }
         
         requestHeaderPart = strtok(NULL, " ");
     }
@@ -796,12 +807,14 @@ void handle_web_client(int fd) {
     struct SceHttpUriElement element;
 
     ret = sceHttpUriParse(NULL, buffer, NULL, &mallocSize, 0);
-    if (ret < 0)
+    if (ret < 0) {
         return;
+    }
 
     pool = malloc(mallocSize);
-    if (pool == NULL)
+    if (pool == NULL) {
         return;
+    }
 
     ret = sceHttpUriParse(&element, buffer, pool, &useSize, mallocSize);
     if (ret < 0) {
@@ -876,7 +889,7 @@ int start_http() {
         return 1;
     }
 
-    while(1) {
+    while (true) {
         if (unload_cmd_sent) {
             break;
         }
@@ -897,7 +910,7 @@ int start_http() {
 int read_kernel_for_client(struct uart_server_client *svc) {
     char s_Buffer[100];
     int bytesRead = 0;
-    while (1) {
+    while (true) {
         if (unload_cmd_sent) {
             break;
         }
@@ -958,7 +971,7 @@ int start_uart_server() {
     // reset clients
     memset(uartservclients, NULL, sizeof(struct uart_server_client) * UART_SERVER_MAXCLIENTS);
 
-    while (1) {
+    while (true) {
         if (unload_cmd_sent) {
             break;
         }

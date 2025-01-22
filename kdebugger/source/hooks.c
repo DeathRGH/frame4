@@ -375,7 +375,7 @@ finish:
 }
 
 int sys_kern_base(struct thread *td, struct sys_kern_base_args *uap) {
-    *uap->kbase = get_kbase();
+    *uap->kbase = get_kernel_base();
     td->td_retval[0] = 0;
     return 0;
 }
@@ -405,8 +405,8 @@ int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap) {
             }
             break;
         case SYS_CONSOLE_CMD_JAILBREAK: {
-            struct ucred* cred;
-            struct filedesc* fd;
+            struct ucred *cred;
+            struct filedesc *fd;
             struct thread *td;
 
             td = curthread();
@@ -446,14 +446,14 @@ void hook_trap_fatal(struct trapframe *tf) {
     }
 
     // stack backtrace
-    uint64_t kernbase = get_kbase();
-    printf("kernelbase: 0x%llX\n", kernbase);
+    uint64_t kernel_base = get_kernel_base();
+    printf("kernelbase: 0x%llX\n", kernel_base);
     uint64_t backlog = 128;
     printf("stack backtrace (0x%llX):\n", sp);
     for (int i = 0; i < backlog; i++) {
         uint64_t sv = *(uint64_t *)((sp - (backlog * sizeof(uint64_t))) + (i * sizeof(uint64_t)));
-        if (sv > kernbase) {
-            printf("    %i <kernbase>+0x%llX\n", i, sv - kernbase);
+        if (sv > kernel_base) {
+            printf("    %i <kernelbase>+0x%llX\n", i, sv - kernel_base);
         }
     }
 
@@ -522,13 +522,13 @@ int install_hooks() {
     cpu_disable_wp();
 
     // trap_fatal hook
-    //uint64_t kernbase = get_kbase();
-    //memcpy((void *)(kernbase + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
-    //write_jmp(kernbase + 0x1718DB, (uint64_t)hook_trap_fatal);
+    //uint64_t kernel_base = get_kernel_base();
+    //memcpy((void *)(kernel_base + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
+    //write_jmp(kernel_base + 0x1718DB, (uint64_t)hook_trap_fatal);
 
     if (cached_firmware == 900) {
         // md_display_dump hook
-        uint64_t kernel_base = get_kbase();
+        uint64_t kernel_base = get_kernel_base();
         write_jmp(kernel_base + 0x315EB1, (uint64_t)md_display_dump_hook);
     }
 

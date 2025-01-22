@@ -105,7 +105,7 @@ int sys_console_cmd(uint64_t cmd, void *data);
 
 #define uprintf(fmt, ...) { char buffer[256]; snprintf(buffer, 256, fmt, ##__VA_ARGS__); sys_console_cmd(SYS_CONSOLE_CMD_PRINT, buffer); }
 
-// gold hen stuff below
+// custom syscall 500 (installed by gold hen)
 int sys_sdk_proc_prx_load(char *process_name, char *prx_path);
 int sys_sdk_proc_prx_unload(char *process_name, int prx_handle);
 

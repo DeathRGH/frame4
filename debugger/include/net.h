@@ -24,9 +24,6 @@
 #define SO_BROADCAST    0x00000020  // permit sending of broadcast msgs
 #define SCE_NET_SO_NBIO 0x00001200
 
-// I would like to move away from the stupid sony wrapper functions
-// They do not always return what I expect and I want to use straight syscalls
-
 #define FD_SETSIZE 1024
 typedef unsigned long fd_mask;
 

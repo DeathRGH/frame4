@@ -17,7 +17,6 @@ struct proc *proc_find_by_name(const char *name) {
     uint64_t currentProc = (uint64_t)*allproc;
     do {
         if (!memcmp((void*)(currentProc + pcomm_offset), name, strlen(name))) {
-            //memcpy(p->p_comm, (void*)(currentProc + pcomm_offset), 32);
             return p;
         }
         currentProc = *(uint64_t *)currentProc;

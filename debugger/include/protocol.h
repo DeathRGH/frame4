@@ -92,19 +92,16 @@ struct cmd_proc_read_packet {
     uint64_t address;
     uint32_t length;
 } __attribute__((packed));
-#define CMD_PROC_READ_PACKET_SIZE 16
 
 struct cmd_proc_write_packet {
     uint32_t pid;
     uint64_t address;
     uint32_t length;
 } __attribute__((packed));
-#define CMD_PROC_WRITE_PACKET_SIZE 16
 
 struct cmd_proc_maps_packet {
     uint32_t pid;
 } __attribute__((packed));
-#define CMD_PROC_MAPS_PACKET_SIZE 4
 
 struct cmd_proc_install_packet {
     uint32_t pid;
@@ -112,7 +109,6 @@ struct cmd_proc_install_packet {
 struct cmd_proc_install_response {
     uint64_t rpcstub;
 } __attribute__((packed));
-#define CMD_PROC_INSTALL_PACKET_SIZE 4
 #define CMD_PROC_INSTALL_RESPONSE_SIZE 8
 
 struct cmd_proc_call_packet {
@@ -130,7 +126,6 @@ struct cmd_proc_call_response {
     uint32_t pid;
     uint64_t rpc_rax;
 } __attribute__((packed));
-#define CMD_PROC_CALL_PACKET_SIZE 68
 #define CMD_PROC_CALL_RESPONSE_SIZE 12
 
 struct cmd_proc_elf_packet {
@@ -140,7 +135,6 @@ struct cmd_proc_elf_packet {
 struct cmd_proc_elf_response {
     uint64_t entry;
 } __attribute__((packed));
-#define CMD_PROC_ELF_PACKET_SIZE 8
 #define CMD_PROC_ELF_RESPONSE_SIZE 8
 
 struct cmd_proc_protect_packet {
@@ -149,7 +143,6 @@ struct cmd_proc_protect_packet {
     uint32_t length;
     uint32_t newprot;
 } __attribute__((packed));
-#define CMD_PROC_PROTECT_PACKET_SIZE 20
 
 typedef enum cmd_proc_scan_valuetype {
     valTypeUInt8 = 0,
@@ -188,7 +181,6 @@ struct cmd_proc_scan_packet {
     uint8_t compareType;
     uint32_t lenData;
 } __attribute__((packed));
-#define CMD_PROC_SCAN_PACKET_SIZE 14
 
 struct cmd_proc_scan_count_results_packet {
     uint32_t pid;
@@ -208,7 +200,6 @@ struct cmd_proc_info_response {
     char titleid[16];
     char contentid[64];
 } __attribute__((packed));
-#define CMD_PROC_INFO_PACKET_SIZE 4
 #define CMD_PROC_INFO_RESPONSE_SIZE 188
 
 struct cmd_proc_alloc_packet {
@@ -218,7 +209,6 @@ struct cmd_proc_alloc_packet {
 struct cmd_proc_alloc_response {
     uint64_t address;
 } __attribute__((packed));
-#define CMD_PROC_ALLOC_PACKET_SIZE 8
 #define CMD_PROC_ALLOC_RESPONSE_SIZE 8
 
 struct cmd_proc_free_packet {
@@ -226,7 +216,6 @@ struct cmd_proc_free_packet {
     uint64_t address;
     uint32_t length;
 } __attribute__((packed));
-#define CMD_PROC_FREE_PACKET_SIZE 16
 
 
 
@@ -235,14 +224,14 @@ struct cmd_proc_prx_load_response {
     uint32_t prx_handle;
 } __attribute__((packed));
 #define CMD_PROC_PRX_LOAD_RESPONSE_SIZE 4
+
 struct cmd_proc_prx_unload_packet {
     uint32_t prx_handle;
 } __attribute__((packed));
-#define CMD_PROC_PRX_UNLOAD_PACKET_SIZE 4
+
 struct cmd_proc_prx_list_packet {
     uint32_t pid;
 } __attribute__((packed));
-#define CMD_PROC_PRX_LIST_PACKET_SIZE 4
 
 
 
@@ -250,14 +239,12 @@ struct cmd_proc_prx_list_packet {
 struct cmd_debug_attach_packet {
     uint32_t pid;
 } __attribute__((packed));
-#define CMD_DEBUG_ATTACH_PACKET_SIZE 4
 
 struct cmd_debug_breakpt_packet {
     uint32_t index;
     uint32_t enabled;
     uint64_t address;
 } __attribute__((packed));
-#define CMD_DEBUG_BREAKPT_PACKET_SIZE 16
 
 struct cmd_debug_watchpt_packet {
     uint32_t index;
@@ -266,33 +253,27 @@ struct cmd_debug_watchpt_packet {
     uint32_t breaktype;
     uint64_t address;
 } __attribute__((packed));
-#define CMD_DEBUG_WATCHPT_PACKET_SIZE 24
 
 struct cmd_debug_stopthr_packet {
     uint32_t lwpid;
 } __attribute__((packed));
-#define CMD_DEBUG_STOPTHR_PACKET_SIZE 4
 
 struct cmd_debug_resumethr_packet {
     uint32_t lwpid;
 } __attribute__((packed));
-#define CMD_DEBUG_RESUMETHR_PACKET_SIZE 4
 
 struct cmd_debug_getregs_packet {
     uint32_t lwpid;
 } __attribute__((packed));
-#define CMD_DEBUG_GETREGS_PACKET_SIZE 4
 
 struct cmd_debug_setregs_packet {
     uint32_t lwpid;
     uint32_t length;
 } __attribute__((packed));
-#define CMD_DEBUG_SETREGS_PACKET_SIZE 8
 
 struct cmd_debug_stopgo_packet {
     uint32_t stop;
 } __attribute__((packed));
-#define CMD_DEBUG_STOPGO_PACKET_SIZE 4
 
 struct cmd_debug_thrinfo_packet {
     uint32_t lwpid;
@@ -303,7 +284,6 @@ struct cmd_debug_thrinfo_response {
     char name[32];
     // TODO: add more information
 } __attribute__((packed));
-#define CMD_DEBUG_THRINFO_PACKET_SIZE 4
 #define CMD_DEBUG_THRINFO_RESPONSE_SIZE 40
 
 #define MAX_BREAKPOINTS 30

@@ -195,8 +195,6 @@ int debug_watchpt_handle(int fd, struct cmd_packet *packet) {
         dbreg64->dr[7] |= DBREG_DR7_SET(wp->index, NULL, NULL, DBREG_DR7_DISABLE);
     }
 
-    //uprintf("dr%i: %llX dr7: %llX", wp->index, wp->address, dbreg64->dr[7]);
-
     // for each current lwpid edit the watchpoint
     for (int i = 0; i < nlwps; i++) {
         r = ptrace(PT_SETDBREGS, lwpids[i], dbreg64, NULL);

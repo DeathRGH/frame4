@@ -4,7 +4,7 @@
 int _main(void) {
     init_ksdk();
 
-    printf("[Frame4] kernel base 0x%llX\n", get_kbase());
+    printf("[Frame4] kernel base 0x%llX\n", get_kernel_base());
 
     if (install_hooks()) {
         printf("[Frame4] failed to install hooks\n");
