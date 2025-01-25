@@ -433,16 +433,20 @@ int patch_shellcore() {
 
     // mount /user on any process sandbox with read/write perm
     uint64_t nop_slide = 0x9090909090909090;
-    if (mountPatchOffset)
+    if (mountPatchOffset) {
         proc_rw_mem(p, (void *)(shellcore_base + mountPatchOffset), 6, &nop_slide, 0, 1);
-    if (mountPatchOffset2)
+    }
+    if (mountPatchOffset2) {
         proc_rw_mem(p, (void *)(shellcore_base + mountPatchOffset2), 6, &nop_slide, 0, 1);
+    }
 
     // other patches
-    if (fwCheckPatch)
+    if (fwCheckPatch) {
         proc_rw_mem(p, (void *)(shellcore_base + fwCheckPatch), 1, (void *)"\xEB", 0, 1); // always jump
-    if (disableCoreDumpPatch) // thanks to osm
+    }
+    if (disableCoreDumpPatch) { // thanks to osm
         proc_rw_mem(p, (void *)(shellcore_base + disableCoreDumpPatch), 5, (void *)"\x41\xC6\x45\x0C\x00", 0, 1); // mov byte ptr [r13 + 0x0C], 0
+    }
 
     return 0;
 }
