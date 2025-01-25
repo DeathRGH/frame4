@@ -287,7 +287,10 @@ int sys_proc_prx_list_handle(struct proc *p, struct sys_proc_prx_list_args *args
     uap.handles_out_count = 256;
     uap.actual_count = (uint64_t)&num;
 
-    ((int(*)(struct thread *, struct dynlib_get_list_args *))sysents[592].sy_call)(p->p_threads.tqh_first, &uap); // sys_dynlib_get_list
+    if(((int(*)(struct thread *, struct dynlib_get_list_args *))sysents[592].sy_call)(p->p_threads.tqh_first, &uap)) { // sys_dynlib_get_list
+        args->num = 0;
+        return 0;
+    }
 
     args->num = num;
 
@@ -309,7 +312,9 @@ int sys_proc_prx_list_handle(struct proc *p, struct sys_proc_prx_list_args *args
             uap2.unk = 1;
             uap2.info = (uint64_t)&info;
 
-            ((int(*)(struct thread *, struct dynlib_get_info_ex_args *))sysents[608].sy_call)(p->p_threads.tqh_first, &uap2); // sys_dynlib_get_info_ex
+            if(((int(*)(struct thread *, struct dynlib_get_info_ex_args *))sysents[608].sy_call)(p->p_threads.tqh_first, &uap2)) { // sys_dynlib_get_info_ex
+                return 1;
+            }
 
             args->entries[i].handle = handles[i];
             args->entries[i].text_address = (uint64_t)info.segment_info[0].base_addr;
