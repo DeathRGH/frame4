@@ -22,10 +22,11 @@ A ps4debug edit used with PS4 Toolbox.
 - Disable ASLR
 - Mount "/user" On Any Process
 - Disable Coredump
-- Remove Firmware Checks For PKGs (PKGs Still Need Backporting)
+- Remove Firmware Checks For PKGs (param.sfo, elf/prx Still Need Backporting)
 - 5.05 Async IO (blkno) Spam Removed
 - 2MB Page Kernel Panic Patched (9.00 And Above)
 - Kernel ELF Loading Patched ("vm_fault_copy_wired: page missing")
+- Virtual Query Patched To Allow `sceKernelVirtualQuery` On Pages Flagged As System
 - ...
 
 ### Supported PS4 Firmwares
