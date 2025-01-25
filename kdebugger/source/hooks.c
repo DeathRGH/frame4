@@ -427,15 +427,16 @@ int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap) {
     return 0;
 }
 
-void hook_trap_fatal(struct trapframe *tf) {
+void trap_fatal_hook(struct trapframe *tf) {
     // print registers
-    const char regnames[15][8] = { "rdi", "rsi", "rdx", "rcx", "r8", "r9", "rax", "rbx", "rbp", "r10", "r11", "r12", "r13", "r14", "r15" };
+    printf("#\n# registers:\n");
+    const char regnames[15][8] = { "rdi", "rsi", "rdx", "rcx", "r8 ", "r9 ", "rax", "rbx", "rbp", "r10", "r11", "r12", "r13", "r14", "r15" };
     for (int i = 0; i < 15; i++) {
         uint64_t rv = *(uint64_t *)((uint64_t)tf + (sizeof(uint64_t) * i));
-        printf("    %s %llX %i\n", regnames[i], rv, rv);
+        printf("#    %s 0x%llX\n", regnames[i], rv);
     }
-    printf("    rip %llX %i\n", tf->tf_rip, tf->tf_rip);
-    printf("    rsp %llX %i\n", tf->tf_rsp, tf->tf_rsp);
+    printf("#    rip 0x%llX\n", tf->tf_rip);
+    printf("#    rsp 0x%llX\n", tf->tf_rsp);
 
     uint64_t sp = 0;
     if ((tf->tf_rsp & 3) == 3) {
@@ -447,15 +448,17 @@ void hook_trap_fatal(struct trapframe *tf) {
 
     // stack backtrace
     uint64_t kernel_base = get_kernel_base();
-    printf("kernelbase: 0x%llX\n", kernel_base);
+    printf("#\n# kernelbase: 0x%llX\n#\n", kernel_base);
     uint64_t backlog = 128;
-    printf("stack backtrace (0x%llX):\n", sp);
+    printf("# backtrace (0x%llX):\n", sp);
     for (int i = 0; i < backlog; i++) {
         uint64_t sv = *(uint64_t *)((sp - (backlog * sizeof(uint64_t))) + (i * sizeof(uint64_t)));
         if (sv > kernel_base) {
-            printf("    %i <kernelbase>+0x%llX\n", i, sv - kernel_base);
+            printf("#    %i <kernelbase> + 0x%llX\n", i, sv - kernel_base);
         }
     }
+
+    printf("#\n");
 
     kern_reboot(4);
 }
@@ -465,7 +468,7 @@ __attribute__((naked)) void md_display_dump_hook() {
     __asm__ ("movq %0, %%rcx" : "=r" (rcx) : : "memory");
 
     uint64_t module_offset = 0;
-    const char *module_name = "unknown_module";
+    const char *module_name = "";
 
     struct thread *cur_thread = curthread(); // gs:0
     if (cur_thread) {
@@ -499,15 +502,66 @@ __attribute__((naked)) void md_display_dump_hook() {
     }
 
     // get kernel base, calculate jump back address and jump
-    __asm__ volatile (
-        "mov ecx, 0xC0000082 \n"
-        "rdmsr \n"
-        "shl rdx, 32 \n"
-        "or rax, rdx \n"
-        "sub rax, 0x1C0 \n"
-        "add rax, 0x315EC3 \n"
-        "jmp rax \n"
-    );
+    // this is a mess, really need proper detours for this
+    switch (cached_firmware) {
+        case 505:
+            __asm__ volatile (
+                "mov ecx, 0xC0000082 \n"
+                "rdmsr \n"
+                "shl rdx, 32 \n"
+                "or rax, rdx \n"
+                "sub rax, 0x1C0 \n"
+                "add rax, 0x236132 \n" // jump back addr
+                "jmp rax \n"
+            );
+            break;
+        case 672:
+            __asm__ volatile (
+                "mov ecx, 0xC0000082 \n"
+                "rdmsr \n"
+                "shl rdx, 32 \n"
+                "or rax, rdx \n"
+                "sub rax, 0x1C0 \n"
+                "add rax, 0xA4D52 \n" // jump back addr
+                "jmp rax \n"
+            );
+            break;
+        case 702:
+            __asm__ volatile (
+                "mov ecx, 0xC0000082 \n"
+                "rdmsr \n"
+                "shl rdx, 32 \n"
+                "or rax, rdx \n"
+                "sub rax, 0x1C0 \n"
+                "add rax, 0x495723 \n" // jump back addr
+                "jmp rax \n"
+            );
+            break;
+        case 900:
+            __asm__ volatile (
+                "mov ecx, 0xC0000082 \n"
+                "rdmsr \n"
+                "shl rdx, 32 \n"
+                "or rax, rdx \n"
+                "sub rax, 0x1C0 \n"
+                "add rax, 0x315EC3 \n" // jump back addr
+                "jmp rax \n"
+            );
+            break;
+        case 1100:
+            __asm__ volatile (
+                "mov ecx, 0xC0000082 \n"
+                "rdmsr \n"
+                "shl rdx, 32 \n"
+                "or rax, rdx \n"
+                "sub rax, 0x1C0 \n"
+                "add rax, 0x25F163 \n" // jump back addr
+                "jmp rax \n"
+            );
+            break;
+        default:
+            break;
+    }
 }
 
 void install_syscall(uint32_t n, void *func) {
@@ -521,15 +575,49 @@ void install_syscall(uint32_t n, void *func) {
 int install_hooks() {
     cpu_disable_wp();
 
-    // trap_fatal hook
-    //uint64_t kernel_base = get_kernel_base();
-    //memcpy((void *)(kernel_base + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
-    //write_jmp(kernel_base + 0x1718DB, (uint64_t)hook_trap_fatal);
+    uint64_t kernel_base = get_kernel_base();
 
-    if (cached_firmware == 900) {
-        // md_display_dump hook
-        uint64_t kernel_base = get_kernel_base();
-        write_jmp(kernel_base + 0x315EB1, (uint64_t)md_display_dump_hook);
+    uint64_t hook_trap_fatal_addr = 0;
+    uint64_t hook_md_display_dump_addr = 0;
+
+    switch (cached_firmware) {
+        case 505:
+            hook_trap_fatal_addr = 0x1718DB;
+            hook_md_display_dump_addr = 0x236120;
+            break;
+        case 672:
+            hook_trap_fatal_addr = 0x2ED33A;
+            hook_md_display_dump_addr = 0xA4D40;
+            break;
+        case 702:
+            hook_trap_fatal_addr = 0x13A4AE;
+            hook_md_display_dump_addr = 0x495711;
+            break;
+        case 900:
+            hook_trap_fatal_addr = 0x2DF76C;
+            hook_md_display_dump_addr = 0x315EB1;
+            break;
+        case 1100:
+            hook_trap_fatal_addr = 0x3C60FC;
+            hook_md_display_dump_addr = 0x25F151;
+            break;
+        default:
+            break;
+    }
+
+    // trap_fatal hook
+    if (cached_firmware == 505) {
+        // trap_fatal hook prep
+        // move trapframe pointer into rdi (only required on 5.05)
+        memcpy((void *)(kernel_base + 0x1718D8), "\x4C\x89\xE7", 3); // mov rdi, r12
+    }
+    if (hook_trap_fatal_addr) {
+        write_jmp(kernel_base + hook_trap_fatal_addr, (uint64_t)trap_fatal_hook);
+    }
+
+    // md_display_dump hook
+    if (hook_md_display_dump_addr) {
+        write_jmp(kernel_base + hook_md_display_dump_addr, (uint64_t)md_display_dump_hook);
     }
 
     // proc

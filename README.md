@@ -18,6 +18,16 @@ A ps4debug edit used with PS4 Toolbox.
 - Loading SPRXs
 - ...
 
+### Patches
+- Disable ASLR
+- Mount "/user" On Any Process
+- Disable Coredump
+- Remove Firmware Checks For PKGs (PKGs Still Need Backporting)
+- 5.05 Async IO (blkno) Spam Removed
+- 2MB Page Kernel Panic Patched (9.00 And Above)
+- Kernel ELF Loading Patched ("vm_fault_copy_wired: page missing")
+- ...
+
 ### Supported PS4 Firmwares
 - 5.05
 - 6.72
@@ -38,6 +48,52 @@ A ps4debug edit used with PS4 Toolbox.
 - [ ] Fix on-console scanner
 - [ ] Stop hijacking ShellCore and instead create our own process
 - [ ] Move stuff to userland that doesn't need to be in kernel
+
+### Fatal Trap Hooks
+Adds detailed info to fatal traps and initiates a clean reboot.
+```
+Fatal trap 12: page fault while in kernel mode
+#
+# registers:
+#    rdi 0x880AE1DE0
+#    rsi 0xFFFFFFFFADBB0000
+#    rdx 0x1000
+#    rcx 0x200
+#    r8  0xFFFFFFFFD7049740
+#    r9  0x92660BA0A
+#    rax 0xFFFFFF806F71FA28
+#    rbx 0xFFFFB8E8075F10B0
+#    rbp 0xFFFFFF806F71F980
+#    r10 0x880AE2DE0
+#    r11 0xFFFFFF806F71FB80
+#    r12 0x0
+#    r13 0xFFFFFFFFD9524010
+#    r14 0x8949C03148000041
+#    r15 0xFFFFB8E807582DA0
+#    rip 0xFFFFFFFFD70494D6
+#    rsp 0x20
+#
+# kernelbase: 0xFFFFFFFFD6DD8000
+#
+# backtrace (0xFFFFFF806F71F970):
+#    7 <kernelbase> + 0x7DE222
+#    11 <kernelbase> + 0x274C010
+#    13 <kernelbase> + 0xB7B72
+#    16 <kernelbase> + 0x274C010
+#    20 <kernelbase> + 0xB7A82
+#    59 <kernelbase> + 0x2DF981
+#    67 <kernelbase> + 0x274C010
+#    71 <kernelbase> + 0x2DF338
+#    79 <kernelbase> + 0x3F36E4
+#    99 <kernelbase> + 0x274C010
+#    103 <kernelbase> + 0x17D83A
+#    108 <kernelbase> + 0x271740
+#    116 <kernelbase> + 0x274C010
+#    122 <kernelbase> + 0x2714BD
+#    123 <kernelbase> + 0x2714D6
+#    125 <kernelbase> + 0x2714DE
+#
+```
 
 ### Backtrace Hooks
 Adds detailed info on the crash logs so you never have to calculate a module offset again.
