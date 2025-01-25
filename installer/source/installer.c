@@ -70,6 +70,9 @@ void patch_505(uint64_t kernbase) {
 
     // patch blkno spam caused by aio bug (5.05 only)
     memcpy((void *)(kernbase + 0x68F188), "\x90\x90\x90\x90\x90", 5);
+
+    // patch sys_virtual_query check for pages flagged as system
+    memcpy((void *)(kernbase + 0x13FA0B), "\xE9\xA9\x00\x00\x00", 5);
 }
 
 void patch_672(uint64_t kernbase) {
@@ -127,6 +130,9 @@ void patch_672(uint64_t kernbase) {
     
     // patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
     memcpy((void *)(kernbase + 0x459763), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch sys_virtual_query check for pages flagged as system
+    memcpy((void *)(kernbase + 0xAD9C4), "\xE9\xC9\x00\x00\x00", 5);
 }
 
 void patch_702(uint64_t kernbase) {
@@ -184,6 +190,9 @@ void patch_702(uint64_t kernbase) {
     
     // patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
     memcpy((void *)(kernbase + 0x26C5F3), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch sys_virtual_query check for pages flagged as system
+    memcpy((void *)(kernbase + 0x1D4750), "\xE9\x81\x00\x00\x00", 5);
 }
 
 void patch_900(uint64_t kernbase) {
@@ -241,6 +250,9 @@ void patch_900(uint64_t kernbase) {
 
     // patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
     memcpy((void *)(kernbase + 0x884BE), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch sys_virtual_query check for pages flagged as system
+    memcpy((void *)(kernbase + 0x1686F0), "\xE9\x81\x00\x00\x00", 5);
 }
 
 void patch_1100(uint64_t kernbase) {
@@ -298,6 +310,9 @@ void patch_1100(uint64_t kernbase) {
 
     // patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
     memcpy((void *)(kernbase + 0x36434E), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch sys_virtual_query check for pages flagged as system
+    memcpy((void *)(kernbase + 0x158500), "\xE9\x81\x00\x00\x00", 5);
 
     // missing patch from goldhen so we add it here
     // allow allocating executable memory
@@ -373,6 +388,8 @@ int patch_shellcore() {
     }
 
     vm_map_unlock_read(map);
+
+    uint64_t shellcore_base = args.maps[1].start;
     
     uint64_t mountPatchOffset = 0;
     uint64_t mountPatchOffset2 = 0;
@@ -384,19 +401,19 @@ int patch_shellcore() {
             mountPatchOffset = 0x31CA2A;
             // mountPatchOffset2 (check did not exist on 5.05 yet)
             fwCheckPatch = 0x3CCB79;
-            // @TODO: core dump
+            disableCoreDumpPatch = 0x2E965E;
             break;
         case 672:
             mountPatchOffset = 0x33C475;
             // mountPatchOffset2 (check did not exist on 6.72 yet)
             fwCheckPatch = 0x3DB6F8;
-            // @TODO: core dump
+            disableCoreDumpPatch = 0x306BCB;
             break;
         case 702:
             mountPatchOffset = 0x31BBBB;
             // mountPatchOffset2 (check did not exist on 7.02 yet)
             fwCheckPatch = 0x3B3B38;
-            // @TODO: core dump
+            disableCoreDumpPatch = 0x2E790B;
             break;
         case 900:
             mountPatchOffset = 0x3232C8;
@@ -417,15 +434,15 @@ int patch_shellcore() {
     // mount /user on any process sandbox with read/write perm
     uint64_t nop_slide = 0x9090909090909090;
     if (mountPatchOffset)
-        proc_rw_mem(p, (void *)(args.maps[1].start + mountPatchOffset), 6, &nop_slide, 0, 1);
+        proc_rw_mem(p, (void *)(shellcore_base + mountPatchOffset), 6, &nop_slide, 0, 1);
     if (mountPatchOffset2)
-        proc_rw_mem(p, (void *)(args.maps[1].start + mountPatchOffset2), 6, &nop_slide, 0, 1);
+        proc_rw_mem(p, (void *)(shellcore_base + mountPatchOffset2), 6, &nop_slide, 0, 1);
 
     // other patches
     if (fwCheckPatch)
-        proc_rw_mem(p, (void *)(args.maps[1].start + fwCheckPatch), 1, (void *)"\xEB", 0, 1); // always jump
+        proc_rw_mem(p, (void *)(shellcore_base + fwCheckPatch), 1, (void *)"\xEB", 0, 1); // always jump
     if (disableCoreDumpPatch) // thanks to osm
-        proc_rw_mem(p, (void *)(args.maps[1].start + disableCoreDumpPatch), 5, (void *)"\x41\xC6\x45\x0C\x00", 0, 1); // mov byte ptr [r13 + 0x0C], 0
+        proc_rw_mem(p, (void *)(shellcore_base + disableCoreDumpPatch), 5, (void *)"\x41\xC6\x45\x0C\x00", 0, 1); // mov byte ptr [r13 + 0x0C], 0
 
     return 0;
 }

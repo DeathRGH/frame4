@@ -438,7 +438,8 @@ int proc_map_elf(struct proc *p, void *elf, void *exec) {
                 proc_write_mem(p, (void *)((uint8_t *)exec + phdr->p_paddr), phdr->p_filesz, (void *)((uint8_t *)elf + phdr->p_offset), NULL);
             }
         }
-    } else {
+    }
+    else {
         // use sections
         for (int i = 0; i < ehdr->e_shnum; i++) {
             struct Elf64_Shdr *shdr = elf_section(ehdr, i);
