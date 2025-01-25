@@ -239,6 +239,23 @@ struct filedesc {
     void *fd_jdir;
 };
 
+struct k_dynlib_info {
+    struct k_dynlib_info *next;     // 0x00
+    const char *path;               // 0x08
+    uint64_t main_dylib_obj;        // 0x10
+    char pad_0x18[0x18];
+    uint64_t text_start;            // 0x30
+    char pad_0x38[0x08];
+    uint64_t text_size;             // 0x40
+    uint64_t data_start;            // 0x48
+    uint64_t data_size;             // 0x50
+    char pad_0x58[24];
+    struct sx *dynlib_bind_lock;    // 0x70
+    char pad_0x78[224];
+    char fingerprint[20];           // 0x158
+    char pad_0x16C[28];
+}; // 0x188
+
 TYPE_BEGIN(struct proc_505, 0x800); // XXX: random, don't use directly without fixing it
 TYPE_FIELD(struct proc_505 *p_forw, 0);
 TYPE_FIELD(TAILQ_HEAD(, thread) p_threads, 0x10);
@@ -246,6 +263,7 @@ TYPE_FIELD(struct ucred *p_ucred, 0x40);
 TYPE_FIELD(struct filedesc *p_fd, 0x48);
 TYPE_FIELD(int pid, 0xB0);
 TYPE_FIELD(struct vmspace *p_vmspace, 0x168);
+TYPE_FIELD(struct k_dynlib_info *p_dynlib, 0x340);
 TYPE_FIELD(char titleid[16], 0x390);
 TYPE_FIELD(char contentid[64], 0x3D4);
 TYPE_FIELD(char p_comm[32], 0x44C);
@@ -259,6 +277,7 @@ TYPE_FIELD(struct ucred *p_ucred, 0x40);
 TYPE_FIELD(struct filedesc *p_fd, 0x48);
 TYPE_FIELD(int pid, 0xB0);
 TYPE_FIELD(struct vmspace *p_vmspace, 0x168);
+TYPE_FIELD(struct k_dynlib_info *p_dynlib, 0x340);
 TYPE_FIELD(char titleid[16], 0x390);
 TYPE_FIELD(char contentid[64], 0x3D4);
 TYPE_FIELD(char p_comm[32], 0x454);

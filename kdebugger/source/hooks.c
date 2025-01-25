@@ -468,27 +468,24 @@ __attribute__((naked)) void md_display_dump_hook() {
     __asm__ ("movq %0, %%rcx" : "=r" (rcx) : : "memory");
 
     uint64_t module_offset = 0;
-    const char *module_name = "";
+    const char *module_path = "";
 
     struct thread *cur_thread = curthread(); // gs:0
     if (cur_thread) {
-        uint64_t rax = *(uint64_t *)(((uint64_t)cur_thread) + 0x08);
-        if (rax) {
-            rax = *(uint64_t *)(rax + 0x340);
-            if (rax) {
-                rax = *(uint64_t *)rax;
-                if (rax) {
-                    struct k_module_info *info = (struct k_module_info *)rax;
-                    while (info) {
-                        uint64_t data_end = info->data_start + info->data_size;
-                        if ((rcx < data_end) && (rcx > info->text_start)) {
-                            module_offset = rcx - info->text_start;
-                            module_name = info->name;
-                            break;
-                        }
-
-                        info = info->next;
+        struct proc *thread_proc = cur_thread->td_proc;
+        if (thread_proc) {
+            struct k_dynlib_info *info = thread_proc->p_dynlib;
+            if (info) {
+                info = info->next; // skipping the first one? maybe empty?
+                while (info) {
+                    uint64_t data_end = info->data_start + info->data_size;
+                    if ((rcx < data_end) && (rcx > info->text_start)) {
+                        module_offset = rcx - info->text_start;
+                        module_path = info->path;
+                        break;
                     }
+
+                    info = info->next;
                 }
             }
         }
@@ -498,7 +495,7 @@ __attribute__((naked)) void md_display_dump_hook() {
         printf("# 0x%016lX\n", rcx);
     }
     else {
-        printf("# 0x%016lX <%s> + 0x%lX\n", rcx, module_name, module_offset);
+        printf("# 0x%016lX <%s> + 0x%lX\n", rcx, module_path, module_offset);
     }
 
     // get kernel base, calculate jump back address and jump
