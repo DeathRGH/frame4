@@ -432,6 +432,59 @@ int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap) {
     return 0;
 }
 
+int sys_kern_vm_map_handle(struct sys_kern_vm_map_args *args) {
+    struct vmspace *vm;
+    struct vm_map *map;
+    struct vm_map_entry *entry;
+
+    vm = *(struct vmspace **)kernel_map;
+    map = &vm->vm_map;
+
+    vm_map_lock_read(map);
+
+    if (!args->maps) {
+        args->num = map->nentries;
+    }
+    else {
+        if (vm_map_lookup_entry(map, NULL, &entry)) {
+            vm_map_unlock_read(map);
+            return 1;
+        }
+
+        for (int i = 0; i < args->num; i++) {
+            args->maps[i].start = entry->start;
+            args->maps[i].end = entry->end;
+            args->maps[i].offset = entry->offset;
+            args->maps[i].prot = entry->prot & (entry->prot >> 8);
+            memcpy(args->maps[i].name, entry->name, sizeof(args->maps[i].name));
+            
+            if (!(entry = entry->next)) {
+                break;
+            }
+        }
+    }
+
+    vm_map_unlock_read(map);
+
+    return 0;
+}
+
+int sys_kern_cmd(struct thread *td, struct sys_kern_cmd_args *uap) {
+    int r;
+
+    switch (uap->cmd) {
+        case SYS_KERN_CMD_VM_MAP:
+            r = sys_kern_vm_map_handle((struct sys_kern_vm_map_args *)uap->data);
+            break;
+        default:
+            r = 1;
+            break;
+    }
+
+    td->td_retval[0] = r;
+    return r;
+}
+
 void trap_fatal_hook(struct trapframe *tf) {
     // print registers
     printf("#\n# registers:\n");
@@ -633,6 +686,9 @@ int install_hooks() {
 
     // console
     install_syscall(112, sys_console_cmd);
+
+    // kern
+    install_syscall(115, sys_kern_cmd);
 
     cpu_enable_wp();
 

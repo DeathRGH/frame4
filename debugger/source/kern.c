@@ -105,6 +105,39 @@ int kern_write_handle(int fd, struct cmd_packet *packet) {
     return 1;
 }
 
+int kern_vm_map_handle(int fd, struct cmd_packet *packet) {
+    struct sys_kern_vm_map_args args;
+    uint32_t size;
+
+    memset(&args, NULL, sizeof(args));
+
+    if (sys_kern_cmd(SYS_KERN_CMD_VM_MAP, &args)) {
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    size = args.num * sizeof(struct kern_vm_map_entry);
+
+    args.maps = (struct kern_vm_map_entry *)pfmalloc(size); // need to chunk this
+    if (!args.maps) {
+        net_send_status(fd, CMD_DATA_NULL);
+        return 1;
+    }
+
+    if (sys_kern_cmd(SYS_KERN_CMD_VM_MAP, &args)) {
+        free(args.maps);
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    net_send_status(fd, CMD_SUCCESS);
+    net_send_data(fd, &args.num, sizeof(uint32_t));
+    net_send_data(fd, args.maps, size);
+
+    free(args.maps);
+    return 0;
+}
+
 int kern_handle(int fd, struct cmd_packet *packet) {
     switch (packet->cmd) {
         case CMD_KERN_BASE:
@@ -113,6 +146,8 @@ int kern_handle(int fd, struct cmd_packet *packet) {
             return kern_read_handle(fd, packet);
         case CMD_KERN_WRITE:
             return kern_write_handle(fd, packet);
+        case CMD_KERN_VM_MAP:
+            return kern_vm_map_handle(fd, packet);
     }
 
     return 1;

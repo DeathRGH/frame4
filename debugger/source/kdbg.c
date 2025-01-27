@@ -66,6 +66,11 @@ int sys_console_cmd(uint64_t cmd, void *data) {
     return syscall(112, cmd, data);
 }
 
+// custom syscall 115
+int sys_kern_cmd(uint64_t cmd, void *data) {
+    return syscall(115, cmd, data);
+}
+
 // gold hen stuff below
 // syscall 500 installed from gold hen
 int sys_sdk_cmd(uint64_t cmd, void *data) {

@@ -130,6 +130,25 @@ struct sys_console_cmd_args {
 } __attribute__((packed));
 int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap);
 
+// custom syscall 115
+#define SYS_KERN_CMD_VM_MAP     1
+struct kern_vm_map_entry {
+    char name[32];
+    uint64_t start;
+    uint64_t end;
+    uint64_t offset;
+    uint16_t prot;
+} __attribute__((packed));
+struct sys_kern_vm_map_args {
+    struct kern_vm_map_entry *maps;
+    uint64_t num;
+} __attribute__((packed));
+struct sys_kern_cmd_args {
+    uint64_t cmd;
+    void *data;
+} __attribute__((packed));
+int sys_kern_cmd(struct thread *td, struct sys_kern_cmd_args *uap);
+
 int install_hooks();
 
 #endif
