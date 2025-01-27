@@ -3,8 +3,8 @@ A ps4debug edit used with PS4 Toolbox.
 
 ### Features
 - Process List
-- Virtual Memory Map
 - Module List
+- Virtual Memory Map (Both Kernel and Userland)
 - Reading/Writing Memory (Both Kernel and Userland)
 - Debugger (Userland)
 - Function Calling (RPC)
