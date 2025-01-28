@@ -16,6 +16,9 @@ struct cmd_console_notify_packet {
 } __attribute__((packed));
 
 struct cmd_console_info_response {
+    char psid[16];
+    int upd_version;
+    int sdk_version;
     char kern_ostype[50];
     char kern_osrelease[50];
     int kern_osrev;
@@ -23,7 +26,7 @@ struct cmd_console_info_response {
     char hw_model[100];
     int hw_ncpu;
 } __attribute__((packed));
-#define CMD_CONSOLE_INFO_RESPONSE_SIZE 308
+#define CMD_CONSOLE_INFO_RESPONSE_SIZE 332
 
 struct cmd_console_fanthreshold_packet {
     uint8_t temperature;

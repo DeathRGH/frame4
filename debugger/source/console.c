@@ -72,12 +72,27 @@ int console_notify_handle(int fd, struct cmd_packet *packet) {
 }
 
 int console_info_handle(int fd, struct cmd_packet *packet) {
+    size_t len;
     struct cmd_console_info_response resp;
-    //extern int (*sysctl)(int *name, unsigned int namelen, char *oldval, size_t *oldlen, char *newval, size_t newlen);
-    //extern int (*sysctlbyname)(char *name, char *oldval, size_t *oldlen, char *newval, size_t newlen);
+
+    // need to move this
+    int libkernel_sys = sceKernelLoadStartModule("libkernel_sys.sprx", 0, NULL, 0, 0, 0);
+    int (*sysctlbyname)(const char *name, void *oldp, size_t *oldlenp, const void *newp, size_t newlen);
+    RESOLVE(libkernel_sys, sysctlbyname);
+
+    memset((void *)resp.psid, NULL, sizeof(resp.psid));
+    len = 16;
+    sysctlbyname("machdep.openpsid", &resp.psid, &len, NULL, 0);
+
+    resp.upd_version = 0;
+	len = 4;
+	sysctlbyname("machdep.upd_version", &resp.upd_version, &len, NULL, 0);
+
+    resp.sdk_version = 0;
+	len = 4;
+	sysctlbyname("kern.sdk_version", &resp.sdk_version, &len, NULL, 0);
 
     int mib[2];
-    size_t len;
 
     memset((void *)resp.kern_ostype, NULL, sizeof(resp.kern_ostype));
     mib[0] = 1; // CTL_KERN
@@ -112,7 +127,7 @@ int console_info_handle(int fd, struct cmd_packet *packet) {
     mib[0] = 6; // CTL_HW
     mib[1] = 3; // HW_NCPU
     syscall(202, mib, 2, &resp.hw_ncpu, &len, NULL, 0);
-
+    
     net_send_status(fd, CMD_SUCCESS);
     net_send_data(fd, &resp, CMD_CONSOLE_INFO_RESPONSE_SIZE);
 
