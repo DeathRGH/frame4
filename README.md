@@ -12,7 +12,7 @@ A ps4debug edit used with PS4 Toolbox.
 - HTTP Server on port 2812
 - Application File Redirector (AFR)
 - Set Fan Threshold Temperature
-- Basic Console Info
+- Console Info (PSID, UPD/SDK Version, Kernel Info, ...)
 - System Notifications
 - Loading ELFs
 - Loading SPRXs
