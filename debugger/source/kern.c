@@ -138,6 +138,24 @@ int kern_vm_map_handle(int fd, struct cmd_packet *packet) {
     return 0;
 }
 
+int kern_rdmsr_handle(int fd, struct cmd_packet *packet) {
+    struct sys_kern_rdmsr_args args;
+    struct cmd_kern_rdmsr_packet *rd;
+
+    rd = (struct cmd_kern_rdmsr_packet *)packet->data;
+
+    args.reg = rd->reg;
+    if (sys_kern_cmd(SYS_KERN_CMD_RDMSR, &args)) {
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    net_send_status(fd, CMD_SUCCESS);
+    net_send_data(fd, &args.msr, sizeof(uint64_t));
+
+    return 0;
+}
+
 int kern_handle(int fd, struct cmd_packet *packet) {
     switch (packet->cmd) {
         case CMD_KERN_BASE:
@@ -148,6 +166,8 @@ int kern_handle(int fd, struct cmd_packet *packet) {
             return kern_write_handle(fd, packet);
         case CMD_KERN_VM_MAP:
             return kern_vm_map_handle(fd, packet);
+        case CMD_KERN_RDMSR:
+            return kern_rdmsr_handle(fd, packet);
     }
 
     return 1;

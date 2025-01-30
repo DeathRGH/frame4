@@ -469,12 +469,21 @@ int sys_kern_vm_map_handle(struct sys_kern_vm_map_args *args) {
     return 0;
 }
 
+int sys_kern_rdmsr_handle(struct sys_kern_rdmsr_args *args) {
+    args->msr = read_msr(args->reg);
+
+    return 0;
+}
+
 int sys_kern_cmd(struct thread *td, struct sys_kern_cmd_args *uap) {
     int r;
 
     switch (uap->cmd) {
         case SYS_KERN_CMD_VM_MAP:
             r = sys_kern_vm_map_handle((struct sys_kern_vm_map_args *)uap->data);
+            break;
+        case SYS_KERN_CMD_RDMSR:
+            r = sys_kern_rdmsr_handle((struct sys_kern_rdmsr_args *)uap->data);
             break;
         default:
             r = 1;
