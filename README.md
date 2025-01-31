@@ -30,6 +30,16 @@ A ps4debug edit used with PS4 Toolbox.
 - Virtual Query Patched To Allow `sceKernelVirtualQuery` On Pages Flagged As System
 - ...
 
+### Syscalls
+Frame4 installs the following custom syscalls:
+- **107** sys_proc_list
+- **108** sys_proc_rw
+- **109** sys_proc_cmd
+- **110** sys_kern_base
+- **111** sys_kern_rw
+- **112** sys_console_cmd
+- **115** sys_kern_cmd
+
 ### Supported PS4 Firmwares
 - 5.05
 - 6.72
