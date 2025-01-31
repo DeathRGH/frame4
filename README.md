@@ -5,7 +5,8 @@ A ps4debug edit used with PS4 Toolbox.
 - Process List
 - Module List
 - Virtual Memory Map (Both Kernel and Userland)
-- Reading/Writing Memory (Both Kernel and Userland)
+- Read/Write Memory (Both Kernel and Userland)
+- Read/~~Write~~ Physical Memory (Kernel Context)
 - Debugger (Userland)
 - Function Calling (RPC)
 - UART Server on port 3321
@@ -97,7 +98,7 @@ Fatal trap 12: page fault while in kernel mode
 ```
 
 ### Backtrace Hooks
-Adds detailed info on the crash logs so you never have to calculate a module offset again.
+Adds detailed info on the crash logs so you never have to calculate a module offset.
 ```
 ...
 #
