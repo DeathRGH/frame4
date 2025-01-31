@@ -1340,6 +1340,112 @@ int proc_prx_list_handle(int fd, struct cmd_packet *packet) {
     return 1;
 }
 
+int proc_aob_handle(int fd, struct cmd_packet *packet) {
+    uint64_t aob_result = 0;
+    struct cmd_proc_aob_packet *aobp;
+
+    aobp = (struct cmd_proc_aob_packet *)packet->data;
+    if (!aobp) {
+        uprintf("ERROR: <proc_aob_handle> !aobp");
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    if (aobp->aob_len > 0x1000) { // should never get this massive
+        uprintf("ERROR: <proc_aob_handle> aobp->aob_len > NET_MAX_LENGTH");
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    uint8_t *aob_data = pfmalloc(aobp->aob_len);
+    if (!aob_data) {
+        uprintf("ERROR: <proc_aob_handle> !aob_data");
+        net_send_status(fd, CMD_DATA_NULL);
+        return 1;
+    }
+
+    uint8_t *mask_data = pfmalloc(aobp->aob_len);
+    if (!mask_data) {
+        free(aob_data);
+        uprintf("ERROR: <proc_aob_handle> !mask_data");
+        net_send_status(fd, CMD_DATA_NULL);
+        return 1;
+    }
+
+    uint8_t *scan_data = pfmalloc(PROC_AOB_SCAN_BUFFER_LEN);
+    if (!scan_data) {
+        free(aob_data);
+        free(mask_data);
+        uprintf("ERROR: <proc_aob_handle> !mask_data");
+        net_send_status(fd, CMD_DATA_NULL);
+        return 1;
+    }
+
+    net_send_status(fd, CMD_SUCCESS);
+
+    // recieve aob and mask
+    net_recv_data(fd, aob_data, aobp->aob_len, 1);
+    net_recv_data(fd, mask_data, aobp->aob_len, 1);
+
+    net_send_status(fd, CMD_SUCCESS);
+
+    // find the index of the first masked byte
+    uint32_t first_masked_index = 0;
+    for (uint32_t i = 0; i < aobp->aob_len; i++) {
+        if (mask_data[i] != 0) {
+            first_masked_index = i;
+            break;
+        }
+    }
+
+    uint32_t left = aobp->length;
+    uint64_t address = aobp->start;
+
+    while (left > 0) {
+        memset(scan_data, NULL, PROC_AOB_SCAN_BUFFER_LEN);
+
+        uint32_t read_size = (left > PROC_AOB_SCAN_BUFFER_LEN) ? PROC_AOB_SCAN_BUFFER_LEN : left;
+        sys_proc_rw(aobp->pid, address, scan_data, read_size, 0);
+
+        // current version will suffer from a problem if the aob overlaps 2 scan segments
+        // need to fix this if someone really wants to use this
+        for (uint64_t i = 0; i < read_size; i++) {
+            if (scan_data[i] == aob_data[first_masked_index]) {
+                // we have found the first index of the bytes that is masked
+                bool match_found = true;
+                for (uint32_t j = first_masked_index; j < aobp->aob_len; j++) {
+                    // check each index of the aob
+                    uint32_t scan_idx = i + (j - first_masked_index);
+                    if (scan_idx >= read_size) {
+                        match_found = false;
+                        break;
+                    }
+                    if ((mask_data[j] != 0) && (scan_data[scan_idx] != aob_data[j])) {
+                        match_found = false;
+                        break;
+                    }
+                }
+
+                if (match_found) {
+                    aob_result = address + i - first_masked_index;
+                    goto found;
+                }
+            }
+        }
+
+        address += read_size;
+        left -= read_size;
+    }
+
+found:
+    net_send_data(fd, &aob_result, sizeof(uint64_t));
+
+    free(aob_data);
+    free(mask_data);
+    free(scan_data);
+    return 0;
+}
+
 int proc_handle(int fd, struct cmd_packet *packet) {
     switch (packet->cmd) {
     case CMD_PROC_LIST:
@@ -1376,6 +1482,8 @@ int proc_handle(int fd, struct cmd_packet *packet) {
         return proc_prx_unload_handle(fd, packet);
     case CMD_PROC_PRX_LIST:
         return proc_prx_list_handle(fd, packet);
+    case CMD_PROC_AOB:
+        return proc_aob_handle(fd, packet);
     }
 
     return 1;

@@ -5,7 +5,7 @@
 #include "errno.h"
 #include "kdbg.h"
 
-#define PACKET_VERSION              "0.2.13"
+#define PACKET_VERSION              "0.2.14"
 #define PACKET_MAGIC                0xFFAABBCC
 
 #define CMD_VERSION                 0xBD000001
@@ -28,8 +28,10 @@
 #define CMD_PROC_PRX_LOAD           0xBDAA000F
 #define CMD_PROC_PRX_UNLOAD         0xBDAA0010
 #define CMD_PROC_PRX_LIST           0xBDAA0011
+#define CMD_PROC_AOB                0xBDAA0012
 
-#define SCAN_MAX_LENGTH             0x80000 // 512KB buffer
+#define SCAN_MAX_LENGTH             0x80000 // 512KB
+#define PROC_AOB_SCAN_BUFFER_LEN    0x80000 // 512KB
 
 #define CMD_DEBUG_ATTACH            0xBDBB0001
 #define CMD_DEBUG_DETACH            0xBDBB0002
@@ -221,9 +223,7 @@ struct cmd_proc_free_packet {
     uint32_t length;
 } __attribute__((packed));
 
-
-
-// prx
+// proc - prx
 struct cmd_proc_prx_load_response {
     uint32_t prx_handle;
 } __attribute__((packed));
@@ -235,6 +235,14 @@ struct cmd_proc_prx_unload_packet {
 
 struct cmd_proc_prx_list_packet {
     uint32_t pid;
+} __attribute__((packed));
+
+// proc - aob
+struct cmd_proc_aob_packet {
+    uint32_t pid;
+    uint64_t start;
+    uint32_t length;
+    uint32_t aob_len;
 } __attribute__((packed));
 
 
