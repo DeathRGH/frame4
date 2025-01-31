@@ -34,6 +34,9 @@ extern int(*vm_map_insert)(struct vm_map *map, uint64_t object, uint64_t offset,
 extern void(*vm_map_lock)(struct vm_map *map);
 extern void(*vm_map_unlock)(struct vm_map *map);
 extern int(*proc_rwmem)(struct proc *p, struct uio *uio);
+extern uint64_t(*pmap_kextract)(uint64_t va);
+extern void *(*pmap_mapdev)(uint64_t pa, uint64_t size);
+extern void(*pmap_unmapdev)(uint64_t va, uint64_t size);
 
 extern uint8_t *disable_console_output;
 extern void *M_TEMP;

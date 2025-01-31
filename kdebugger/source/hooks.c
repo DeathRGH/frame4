@@ -392,6 +392,13 @@ int sys_kern_rw(struct thread *td, struct sys_kern_rw_args *uap) {
         cpu_enable_wp();
     }
     else {
+        // test to convert virtual to physical address
+        //uint64_t physical = pmap_kextract(uap->address);
+        //printf("<sys_kern_rw> physical: 0x%llX\n", physical);
+        //if (!physical) {
+        //    memset(uap->data, 0x69, uap->length);
+        //}
+
         memcpy(uap->data, (void *)uap->address, uap->length);
     }
 
@@ -475,6 +482,25 @@ int sys_kern_rdmsr_handle(struct sys_kern_rdmsr_args *args) {
     return 0;
 }
 
+int sys_kern_phys_rw_handle(struct sys_kern_phys_rw_args *args) {
+    if (args->write) {
+        printf("<sys_kern_phys_rw_handle> WRITE - phys write not implemented!\n");
+        //cpu_disable_wp();
+        //memcpy((void *)args->address, args->data, args->length);
+        //cpu_enable_wp();
+    }
+    else {
+        uint64_t virtual = (uint64_t)pmap_mapdev(args->address, args->length);
+        printf("<sys_kern_phys_rw_handle> READ - physical: 0x%llX, virtual: 0x%llX\n", args->address, virtual);
+        if (virtual) {
+            memcpy(args->data, (void *)virtual, args->length);
+            pmap_unmapdev(virtual, args->length);
+        }
+    }
+
+    return 0;
+}
+
 int sys_kern_cmd(struct thread *td, struct sys_kern_cmd_args *uap) {
     int r;
 
@@ -484,6 +510,9 @@ int sys_kern_cmd(struct thread *td, struct sys_kern_cmd_args *uap) {
             break;
         case SYS_KERN_CMD_RDMSR:
             r = sys_kern_rdmsr_handle((struct sys_kern_rdmsr_args *)uap->data);
+            break;
+        case SYS_KERN_CMD_PHYS_RW:
+            r = sys_kern_phys_rw_handle((struct sys_kern_phys_rw_args *)uap->data);
             break;
         default:
             r = 1;

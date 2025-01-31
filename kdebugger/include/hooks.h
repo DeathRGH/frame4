@@ -133,6 +133,7 @@ int sys_console_cmd(struct thread *td, struct sys_console_cmd_args *uap);
 // custom syscall 115
 #define SYS_KERN_CMD_VM_MAP     1
 #define SYS_KERN_CMD_RDMSR      2
+#define SYS_KERN_CMD_PHYS_RW    3
 struct kern_vm_map_entry {
     char name[32];
     uint64_t start;
@@ -147,6 +148,12 @@ struct sys_kern_vm_map_args {
 struct sys_kern_rdmsr_args {
     uint32_t reg;
     uint64_t msr;
+} __attribute__((packed));
+struct sys_kern_phys_rw_args {
+    uint64_t address;
+    void *data;
+    uint64_t length;
+    uint64_t write;
 } __attribute__((packed));
 struct sys_kern_cmd_args {
     uint64_t cmd;

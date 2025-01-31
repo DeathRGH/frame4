@@ -5,7 +5,7 @@
 #include "errno.h"
 #include "kdbg.h"
 
-#define PACKET_VERSION              "0.2.12"
+#define PACKET_VERSION              "0.2.13"
 #define PACKET_MAGIC                0xFFAABBCC
 
 #define CMD_VERSION                 0xBD000001
@@ -53,6 +53,8 @@
 #define CMD_KERN_WRITE              0xBDCC0003
 #define CMD_KERN_VM_MAP             0xBDCC0004
 #define CMD_KERN_RDMSR              0xBDCC0005
+#define CMD_KERN_PHYS_READ          0xBDCC0006
+#define CMD_KERN_PHYS_WRITE         0xBDCC0007
 
 #define CMD_CONSOLE_REBOOT          0xBDDD0001
 #define CMD_CONSOLE_END             0xBDDD0002

@@ -23,6 +23,9 @@ int(*vm_map_insert)(struct vm_map *map, uint64_t object, uint64_t offset, uint64
 void(*vm_map_lock)(struct vm_map *map);
 void(*vm_map_unlock)(struct vm_map *map);
 int(*proc_rwmem)(struct proc *p, struct uio *uio);
+uint64_t(*pmap_kextract)(uint64_t va);
+void *(*pmap_mapdev)(uint64_t pa, uint64_t size);
+void(*pmap_unmapdev)(uint64_t va, uint64_t size);
 
 uint8_t *disable_console_output;
 void *M_TEMP;
@@ -60,6 +63,9 @@ void init_505sdk(uint8_t *kbase) {
     vm_map_lock = (void *)(kbase + 0x19EFF0);
     vm_map_unlock = (void *)(kbase + 0x19F060);
     proc_rwmem = (void *)(kbase + 0x30D150);
+    //pmap_kextract = (void *)(kbase + 0x00);
+    //pmap_mapdev = (void *)(kbase + 0x00);
+    //pmap_unmapdev = (void *)(kbase + 0x00);
     disable_console_output = (void *)(kbase + 0x19ECEB0);
     M_TEMP = (void *)(kbase + 0x14B4110);
     kernel_map = (void *)(kbase + 0x1AC60E0);
@@ -91,6 +97,9 @@ void init_672sdk(uint8_t *kbase) {
     vm_map_lock = (void *)(kbase + 0x44CBF0);
     vm_map_unlock = (void *)(kbase + 0x44CC60);
     proc_rwmem = (void *)(kbase + 0x10EE10);
+    //pmap_kextract = (void *)(kbase + 0x00);
+    //pmap_mapdev = (void *)(kbase + 0x00);
+    //pmap_unmapdev = (void *)(kbase + 0x00);
     disable_console_output = (void *)(kbase + 0x1A6EB18);
     M_TEMP = (void *)(kbase + 0x1540EB0);
     kernel_map = (void *)(kbase + 0x220DFC0);
@@ -122,6 +131,9 @@ void init_702sdk(uint8_t *kbase) {
     vm_map_lock = (void *)(kbase + 0x25FA50);
     vm_map_unlock = (void *)(kbase + 0x25FAB0);
     proc_rwmem = (void *)(kbase + 0x43E80);
+    //pmap_kextract = (void *)(kbase + 0x00);
+    //pmap_mapdev = (void *)(kbase + 0x00);
+    //pmap_unmapdev = (void *)(kbase + 0x00);
     disable_console_output = (void *)(kbase + 0x1A6EAA0);
     M_TEMP = (void *)(kbase + 0x1A7AE50);
     kernel_map = (void *)(kbase + 0x21C8EE0);
@@ -153,6 +165,9 @@ void init_900sdk(uint8_t *kbase) {
     vm_map_lock = (void *)(kbase + 0x7BA30);
     vm_map_unlock = (void *)(kbase + 0x7BAA0);
     proc_rwmem = (void *)(kbase + 0x41EB00);
+    pmap_kextract = (void *)(kbase + 0x12D3B0);
+    pmap_mapdev = (void *)(kbase + 0x1377A0);
+    pmap_unmapdev = (void *)(kbase + 0x1377C0);
     disable_console_output = (void *)(kbase + 0x152BF60);
     M_TEMP = (void *)(kbase + 0x15621E0);
     kernel_map = (void *)(kbase + 0x2268D48);
@@ -184,6 +199,9 @@ void init_1100sdk(uint8_t *kbase) {
     vm_map_lock = (void *)(kbase + 0x357760);
     vm_map_unlock = (void *)(kbase + 0x3577D0);
     proc_rwmem = (void *)(kbase + 0x3838A0);
+    //pmap_kextract = (void *)(kbase + 0x00);
+    //pmap_mapdev = (void *)(kbase + 0x00);
+    //pmap_unmapdev = (void *)(kbase + 0x00);
     disable_console_output = (void *)(kbase + 0x152CFF8);
     M_TEMP = (void *)(kbase + 0x15415B0);
     kernel_map = (void *)(kbase + 0x21FF130);
