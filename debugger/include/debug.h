@@ -138,6 +138,8 @@ struct debug_interrupt_packet {
 #define DEBUG_PORT 42069
 
 extern int g_debugging;
+extern int g_signal;
+extern uint32_t g_pid;
 extern struct server_client *curdbgcli;
 extern struct debug_context *curdbgctx;
 

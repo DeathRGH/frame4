@@ -49,6 +49,7 @@
 #define CMD_DEBUG_STOPGO            0xBDBB0010
 #define CMD_DEBUG_THRINFO           0xBDBB0011
 #define CMD_DEBUG_SINGLESTEP        0xBDBB0012
+#define CMD_DEBUG_EXT_STOPGO        0xBDBB0500
 
 #define CMD_KERN_BASE               0xBDCC0001
 #define CMD_KERN_READ               0xBDCC0002
@@ -296,6 +297,12 @@ struct cmd_debug_thrinfo_response {
     char name[32];
     // TODO: add more information
 } __attribute__((packed));
+
+struct cmd_debug_ext_stopgo_packet {
+    uint32_t pid;
+    uint8_t stop;
+} __attribute__((packed));
+
 #define CMD_DEBUG_THRINFO_RESPONSE_SIZE 40
 
 #define MAX_BREAKPOINTS 30
