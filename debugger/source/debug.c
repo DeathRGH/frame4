@@ -1,6 +1,8 @@
 #include "debug.h"
 
 int g_debugging;
+int g_signal;
+uint32_t g_pid;
 struct server_client *curdbgcli;
 struct debug_context *curdbgctx;
 
@@ -572,6 +574,53 @@ int debug_singlestep_handle(int fd, struct cmd_packet *packet) {
     return 0;
 }
 
+int debug_ext_stopgo_handle(int fd, struct cmd_packet* packet) {
+    struct cmd_debug_ext_stopgo_packet* sp;
+    int signal;
+    int r;
+
+    sp = (struct cmd_debug_ext_stopgo_packet*)packet->data;
+
+    if (!sp) {
+        net_send_status(fd, CMD_DATA_NULL);
+        return 1;
+    }
+
+    if (sp->pid == 0) {
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    if (sp->stop > 2) {
+        net_send_status(fd, CMD_ERROR);
+        return 1;
+    }
+
+    signal = NULL;
+    if (g_debugging == 0) {
+        signal = SIGCONT;
+        if (sp->stop != 0) {
+            sp->stop--;
+            signal = sp->stop == 0 ? SIGSTOP : SIGKILL;
+        }
+        syscall(37, sp->pid, signal);
+    }
+    else {
+        g_pid = sp->pid;
+        if (sp->stop == 0) {
+            g_signal = 0;
+        }
+        else {
+            sp->stop--;
+            g_signal = sp->stop == 0 ? SIGSTOP : SIGKILL;
+        }
+    }
+
+    net_send_status(fd, CMD_SUCCESS);
+
+    return 0;
+}
+
 void debug_cleanup(struct debug_context *dbgctx) {
     struct __dbreg64 dbreg64;
     uint32_t *lwpids;
@@ -647,6 +696,8 @@ int debug_handle(int fd, struct cmd_packet *packet) {
             return debug_thrinfo_handle(fd, packet);
         case CMD_DEBUG_SINGLESTEP:
             return debug_singlestep_handle(fd, packet);
+        case CMD_DEBUG_EXT_STOPGO:
+            return debug_ext_stopgo_handle(fd, packet);
         default:
             return 1;
     }

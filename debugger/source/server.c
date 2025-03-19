@@ -371,6 +371,7 @@ error:
 
 void configure_socket(int fd) {
     int flag;
+    int bufsize;
 
     flag = 1;
     sceNetSetsockopt(fd, SOL_SOCKET, SO_NBIO, (char *)&flag, sizeof(flag));
@@ -380,6 +381,18 @@ void configure_socket(int fd) {
 
     flag = 1;
     sceNetSetsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, (char *)&flag, sizeof(flag));
+
+    flag = 1;
+    sceNetSetsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&flag, sizeof(flag));
+
+    flag = 1;
+    sceNetSetsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&flag, sizeof(flag));
+
+    bufsize = 0x100000;
+    sceNetSetsockopt(fd, SOL_SOCKET, SO_SNDBUF, (char *)&bufsize, sizeof(bufsize));
+
+    bufsize = 0x100000;
+    sceNetSetsockopt(fd, SOL_SOCKET, SO_RCVBUF, (char *)&bufsize, sizeof(bufsize));
 }
 
 void *broadcast_thread(void *arg) {
@@ -495,6 +508,8 @@ int start_server() {
 
     // reset debugging stuff
     g_debugging = 0;
+    g_pid = 0;
+    g_signal = -1;
     curdbgcli = NULL;
     curdbgctx = NULL;
 
