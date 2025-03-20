@@ -614,6 +614,11 @@ int debug_ext_stopgo_handle(int fd, struct cmd_packet* packet) {
             sp->stop--;
             g_signal = sp->stop == 0 ? SIGSTOP : SIGKILL;
         }
+        r = ptrace(PT_CONTINUE, g_pid, (void*)1, g_signal);
+        if (r == -1 && errno) {
+            net_send_status(fd, CMD_ERROR);
+            return 1;
+        }
     }
 
     net_send_status(fd, CMD_SUCCESS);
