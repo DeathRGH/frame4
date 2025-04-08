@@ -1,5 +1,5 @@
 # Frame4
-A ps4debug edit used with PS4 Toolbox.
+A ps4debug edit with extended features.
 
 ### Features
 - Process List
