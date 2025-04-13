@@ -50,6 +50,7 @@ Frame4 installs the following custom syscalls:
 
 ### Libs
 - [C#](https://github.com/DeathRGH/libframe4-cs)
+- [C++](https://github.com/DeathRGH/libframe4-cpp) (WIP)
 - [JavaScript](https://github.com/DeathRGH/libframe4-js)
 
 ### Goals
