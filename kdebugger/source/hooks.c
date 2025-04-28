@@ -1,5 +1,4 @@
 #include "hooks.h"
-#include "afr.h"
 
 inline void write_jmp(uint64_t address, uint64_t destination) {
     // absolute jump
@@ -224,7 +223,7 @@ int sys_proc_elf_handle(struct proc *p, struct sys_proc_elf_args *args) {
     }
 
     // launch the elf in a new thread
-    if(proc_create_thread(p, entry)) {
+    if (proc_create_thread(p, entry)) {
         return 1;
     }
 
@@ -254,14 +253,14 @@ int sys_proc_thrinfo_handle(struct proc *p, struct sys_proc_thrinfo_args *args) 
     struct thread *thr;
 
     TAILQ_FOREACH(thr, &p->p_threads, td_plist) {
-        if(thr->tid == args->lwpid) {
+        if (thr->tid == args->lwpid) {
             args->priority = thr->td_priority;
             memcpy(args->name, thr->td_name, sizeof(args->name));
             break;
         }
     }
 
-    if(thr && thr->tid == args->lwpid) {
+    if (thr && thr->tid == args->lwpid) {
         return 0;
     }
 
@@ -287,7 +286,7 @@ int sys_proc_prx_list_handle(struct proc *p, struct sys_proc_prx_list_args *args
     uap.handles_out_count = 256;
     uap.actual_count = (uint64_t)&num;
 
-    if(((int(*)(struct thread *, struct dynlib_get_list_args *))sysents[592].sy_call)(p->p_threads.tqh_first, &uap)) { // sys_dynlib_get_list
+    if (((int(*)(struct thread *, struct dynlib_get_list_args *))sysents[592].sy_call)(p->p_threads.tqh_first, &uap)) { // sys_dynlib_get_list
         args->num = 0;
         return 0;
     }
@@ -312,7 +311,7 @@ int sys_proc_prx_list_handle(struct proc *p, struct sys_proc_prx_list_args *args
             uap2.unk = 1;
             uap2.info = (uint64_t)&info;
 
-            if(((int(*)(struct thread *, struct dynlib_get_info_ex_args *))sysents[608].sy_call)(p->p_threads.tqh_first, &uap2)) { // sys_dynlib_get_info_ex
+            if (((int(*)(struct thread *, struct dynlib_get_info_ex_args *))sysents[608].sy_call)(p->p_threads.tqh_first, &uap2)) { // sys_dynlib_get_info_ex
                 return 1;
             }
 
@@ -729,10 +728,6 @@ int install_hooks() {
     install_syscall(115, sys_kern_cmd);
 
     cpu_enable_wp();
-
-    if (install_afr_hooks()) {
-        return 1;
-    }
 
     return 0;
 }

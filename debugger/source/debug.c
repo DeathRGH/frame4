@@ -508,9 +508,9 @@ int debug_stopgo_handle(int fd, struct cmd_packet *packet) {
     signal = NULL;
 
     if (sp->stop == 1) {
-        signal = SIGSTOP; //fix 2nd stop crashing
+        signal = SIGSTOP; // fix 2nd stop crashing
     }
-    else if(sp->stop == 2) {
+    else if (sp->stop == 2) {
         signal = SIGKILL;
     }
 

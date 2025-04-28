@@ -54,7 +54,7 @@ int proc_get_vm_map(struct proc *p, struct proc_vm_map_entry **entries, uint64_t
     }
 
     r = vm_map_lookup_entry(map, NULL, &entry);
-    if(r) {
+    if (r) {
         goto error;
     }
 

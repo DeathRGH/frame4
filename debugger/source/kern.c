@@ -66,7 +66,7 @@ int kern_write_handle(int fd, struct cmd_packet *packet) {
 
     wp = (struct cmd_kern_write_packet *)packet->data;
 
-    if(wp) {
+    if (wp) {
         data = pfmalloc(NET_MAX_LENGTH);
         if (!data) {
             net_send_status(fd, CMD_DATA_NULL);
@@ -221,7 +221,7 @@ int kern_phys_write_handle(int fd, struct cmd_packet *packet) {
 
     wp = (struct cmd_kern_write_packet *)packet->data;
 
-    if(wp) {
+    if (wp) {
         data = pfmalloc(NET_MAX_LENGTH);
         if (!data) {
             net_send_status(fd, CMD_DATA_NULL);

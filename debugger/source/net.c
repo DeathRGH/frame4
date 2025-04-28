@@ -51,7 +51,7 @@ int net_recv_data(int fd, void *data, int length, int force) {
 
         if (recv <= 0) {
             if (force) {
-                if(errno && errno != EWOULDBLOCK) {
+                if (errno && errno != EWOULDBLOCK) {
                     return recv;
                 }
             }

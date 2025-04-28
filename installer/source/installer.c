@@ -347,7 +347,7 @@ void patch_kernel() {
 
 int patch_shellcore() {
     struct proc *p = proc_find_by_name("SceShellCore");
-    if(!p) {
+    if (!p) {
         printf("[Frame4] <patch_shellcore> could not find SceShellCore process!\n");
         return 1;
     }

@@ -11,7 +11,6 @@ A ps4debug edit with extended features.
 - Function Calling (RPC)
 - UART Server on port 3321
 - HTTP Server on port 2812
-- Application File Redirector (AFR)
 - Set Fan Threshold Temperature
 - Console Info (PSID, UPD/SDK Version, Kernel Info, ...)
 - System Notifications
