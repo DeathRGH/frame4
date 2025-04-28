@@ -5,7 +5,7 @@
 #include "errno.h"
 #include "kdbg.h"
 
-#define PACKET_VERSION              "0.3.1"
+#define PACKET_VERSION              "0.3.2"
 #define PACKET_MAGIC                0xFFAABBCC
 
 #define CMD_VERSION                 0xBD000001
