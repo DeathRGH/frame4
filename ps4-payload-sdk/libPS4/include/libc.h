@@ -1,6 +1,7 @@
 #ifndef LIBC_H
 #define LIBC_H
 
+#include <stdarg.h>
 #include "types.h"
 #include "file.h"
 
@@ -77,6 +78,7 @@ extern int (*fseek)(FILE *stream, long int offset, int origin);
 extern long int (*ftell)(FILE *stream);
 extern int (*fclose)(FILE *stream);
 extern int (*fprintf)(FILE *stream, const char *format, ...);
+extern int (*vasprintf)(char **ret, const char *format, va_list ap);
 
 void initLibc(void);
 

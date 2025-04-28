@@ -75,22 +75,17 @@ int console_info_handle(int fd, struct cmd_packet *packet) {
     size_t len;
     struct cmd_console_info_response resp;
 
-    // need to move this
-    int libkernel_sys = sceKernelLoadStartModule("libkernel_sys.sprx", 0, NULL, 0, 0, 0);
-    int (*sysctlbyname)(const char *name, void *oldp, size_t *oldlenp, const void *newp, size_t newlen);
-    RESOLVE(libkernel_sys, sysctlbyname);
-
     memset((void *)resp.psid, NULL, sizeof(resp.psid));
     len = 16;
     sysctlbyname("machdep.openpsid", &resp.psid, &len, NULL, 0);
 
     resp.upd_version = 0;
-	len = 4;
-	sysctlbyname("machdep.upd_version", &resp.upd_version, &len, NULL, 0);
+    len = 4;
+    sysctlbyname("machdep.upd_version", &resp.upd_version, &len, NULL, 0);
 
     resp.sdk_version = 0;
-	len = 4;
-	sysctlbyname("kern.sdk_version", &resp.sdk_version, &len, NULL, 0);
+    len = 4;
+    sysctlbyname("kern.sdk_version", &resp.sdk_version, &len, NULL, 0);
 
     int mib[2];
 

@@ -7,10 +7,12 @@ int (*sceNetSocket)(const char *, int, int, int);
 int (*sceNetSocketClose)(int);
 int (*sceNetConnect)(int, struct sockaddr *, int);
 int (*sceNetSend)(int, const void *, size_t, int);
+int (*sceNetSendto)(int s, void *msg, unsigned int len, int flags, struct sockaddr *to, unsigned int tolen);
 int (*sceNetBind)(int, struct sockaddr *, int);
 int (*sceNetListen)(int, int);
 int (*sceNetAccept)(int, struct sockaddr *, unsigned int *);
 int (*sceNetRecv)(int, void *, size_t, int);
+int (*sceNetRecvfrom)(int s, void *buf, unsigned int len, int flags, struct sockaddr *from, unsigned int *fromlen);
 int (*sceNetSocketAbort)(int, int);
 
 int (*sceHttpUriParse)(struct SceHttpUriElement *, const char *, void *, size_t *, size_t);
@@ -40,10 +42,12 @@ void initNetwork(void) {
   RESOLVE(libNet, sceNetSocketClose);
   RESOLVE(libNet, sceNetConnect);
   RESOLVE(libNet, sceNetSend);
+  RESOLVE(libNet, sceNetSendto);
   RESOLVE(libNet, sceNetBind);
   RESOLVE(libNet, sceNetListen);
   RESOLVE(libNet, sceNetAccept);
   RESOLVE(libNet, sceNetRecv);
+  RESOLVE(libNet, sceNetRecvfrom);
   RESOLVE(libNet, sceNetSocketAbort);
 
   int libHttp = sceKernelLoadStartModule("libSceHttp.sprx", 0, NULL, 0, 0, 0);

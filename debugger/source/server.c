@@ -429,13 +429,6 @@ void *broadcast_thread(void *arg) {
         return NULL;
     }
 
-    // TODO: XXX: clean this up, but meh not too dirty? is it? hmmm
-    int libNet = sceKernelLoadStartModule("libSceNet.sprx", 0, NULL, 0, 0, 0);
-    int (*sceNetRecvfrom)(int s, void *buf, unsigned int len, int flags, struct sockaddr *from, unsigned int *fromlen);
-    int (*sceNetSendto)(int s, void *msg, unsigned int len, int flags, struct sockaddr *to, unsigned int tolen);
-    RESOLVE(libNet, sceNetRecvfrom);
-    RESOLVE(libNet, sceNetSendto);
-
     while (true) {
         if (unload_cmd_sent) {
             break;
@@ -698,7 +691,7 @@ void handle_web_process_list(int fd) {
         struct proc_list_entry *entries = (struct proc_list_entry *)((struct proc_list_entry **)data);
         char responseJson[0x20000];
         *(char *)responseJson = 0;
-        for(int entryIndex = 0; entryIndex < num; entryIndex++) {
+        for (int entryIndex = 0; entryIndex < num; entryIndex++) {
             char tempBuf[1000];
             snprintf(tempBuf, sizeof(tempBuf), "%s{\"name\":\"%s\",\"pid\":%i }", entryIndex == 0 ? "[" : ",", entries[entryIndex].p_comm, entries[entryIndex].pid);
             strcat(responseJson, tempBuf);
@@ -750,7 +743,7 @@ void handle_web_write_memory(int fd, char *query) {
     uint64_t memoryAddress = strtoull(address, &memoryEnd, 16);
     int bytesLength = strlen(bytes) / 2;
     char *byteData = pfmalloc(bytesLength);
-    for(int i = 0; i < bytesLength; i++) {
+    for (int i = 0; i < bytesLength; i++) {
         char tempBuffer[3];
         char *dummy;
         strncpy(tempBuffer, bytes + (i * 2), 2);
@@ -788,7 +781,7 @@ void handle_web_read_memory(int fd, char *query) {
     char bytesString[0x20000];
     *(char *)bytesString = 0;
     unsigned char *ptr = data;
-    for(int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
         char tempBuf[4];
         snprintf(tempBuf, sizeof(tempBuf), "%s%02X", (i == 0 ? "" : " "), (int)ptr[i]);
         strcat(bytesString, tempBuf);

@@ -68,6 +68,7 @@ int (*fseek)(FILE *stream, long int offset, int origin);
 long int (*ftell)(FILE *stream);
 int (*fclose)(FILE *stream);
 int (*fprintf)(FILE *stream, const char *format, ...);
+int (*vasprintf)(char **ret, const char *format, va_list ap);
 
 void initLibc(void) {
   int libc = sceKernelLoadStartModule("libSceLibcInternal.sprx", 0, NULL, 0, 0, 0);
@@ -138,4 +139,5 @@ void initLibc(void) {
   RESOLVE(libc, ftell);
   RESOLVE(libc, fclose);
   RESOLVE(libc, fprintf);
+  RESOLVE(libc, vasprintf);
 }

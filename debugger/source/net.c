@@ -1,4 +1,3 @@
-#include <stdarg.h>
 #include "net.h"
 
 int net_select(int fd, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout) {
@@ -74,14 +73,7 @@ int net_send_status(int fd, uint32_t status) {
     return net_send_data(fd, &d, sizeof(uint32_t));
 }
 
-int (*vasprintf)(char **ret, const char *format, va_list ap);
-
 int fd_printf(int fd, const char *format, ...) {
-    int libNet = sceKernelLoadStartModule("libSceLibcInternal.sprx", 0, NULL, 0, 0, 0);
-    int (*vasprintf)(char **ret, const char *format, va_list ap);
-
-
-    RESOLVE(libNet, vasprintf);
     va_list arg;
     int len;
     char *str;

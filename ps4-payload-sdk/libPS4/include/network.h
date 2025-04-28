@@ -142,10 +142,12 @@ extern int (*sceNetSocket)(const char *, int, int, int);
 extern int (*sceNetSocketClose)(int);
 extern int (*sceNetConnect)(int, struct sockaddr *, int);
 extern int (*sceNetSend)(int, const void *, size_t, int);
+extern int (*sceNetSendto)(int s, void *msg, unsigned int len, int flags, struct sockaddr *to, unsigned int tolen);
 extern int (*sceNetBind)(int, struct sockaddr *, int);
 extern int (*sceNetListen)(int, int);
 extern int (*sceNetAccept)(int, struct sockaddr *, unsigned int *);
 extern int (*sceNetRecv)(int, void *, size_t, int);
+extern int (*sceNetRecvfrom)(int s, void *buf, unsigned int len, int flags, struct sockaddr *from, unsigned int *fromlen);
 extern int (*sceNetSocketAbort)(int, int);
 
 extern int (*sceHttpUriParse)(struct SceHttpUriElement *, const char *, void *, size_t *, size_t);

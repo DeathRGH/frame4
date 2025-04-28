@@ -32,7 +32,7 @@ uint64_t (*sceKernelGetProcessTime)(void);
 int (*sceKernelGetCurrentCpu)(void);
 
 int (*sysctl)(int *name, unsigned int namelen, char *oldval, size_t *oldlen, char *newval, size_t newlen);
-int (*sysctlbyname)(char *name, char *oldval, size_t *oldlen, char *newval, size_t newlen);
+int (*sysctlbyname)(const char *name, void *oldval, size_t *oldlen, const void *newval, size_t newlen);
 int (*sysarch)(int type, void *arg);
 int (*execve)(char *path, char *argv[], char *envp[]);
 
