@@ -416,14 +416,16 @@ int patch_shellcore() {
             disableCoreDumpPatch = 0x2E790B;
             break;
         case 900:
-            mountPatchOffset = 0x3232C8;
-            mountPatchOffset2 = 0x3232C0;
+            // causes issues
+            //mountPatchOffset = 0x3232C8;
+            //mountPatchOffset2 = 0x3232C0;
             fwCheckPatch = 0x3C5EA7;
             disableCoreDumpPatch = 0x2EFC1B;
             break;
         case 1100:
-            mountPatchOffset = 0x3210C6;
-            mountPatchOffset2 = 0x3210BC;
+            // causes issues
+            //mountPatchOffset = 0x3210C6;
+            //mountPatchOffset2 = 0x3210BC;
             fwCheckPatch = 0x3C41A7;
             disableCoreDumpPatch = 0x2ECF2B;
             break;
