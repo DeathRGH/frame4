@@ -544,7 +544,7 @@ void trap_fatal_hook(struct trapframe *tf) {
     // stack backtrace
     uint64_t kernel_base = get_kernel_base();
     printf("#\n# kernelbase: 0x%llX\n#\n", kernel_base);
-    uint64_t backlog = 128;
+    uint64_t backlog = 256;
     printf("# backtrace (0x%llX):\n", sp);
     for (int i = 0; i < backlog; i++) {
         uint64_t sv = *(uint64_t *)((sp - (backlog * sizeof(uint64_t))) + (i * sizeof(uint64_t)));
