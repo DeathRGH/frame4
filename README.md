@@ -51,6 +51,7 @@ Frame4 installs the following custom syscalls:
 - [C#](https://github.com/DeathRGH/libframe4-cs)
 - [C++](https://github.com/DeathRGH/libframe4-cpp) (WIP)
 - [JavaScript](https://github.com/DeathRGH/libframe4-js)
+- [qt](https://github.com/DeathRGH/libframe4-qt) to be used with [qt-creator](https://github.com/qt-creator/qt-creator)
 
 ### Goals
 - [x] Make frame4 load side by side with ps4debug
@@ -131,6 +132,7 @@ If you want to contribute, feel free to make a pull request or open an issue.
 - [Dizz](https://twitter.com/DizzMods) Http server, updated ksdk, multi fw support
 - [Golden]() Original ps4debug
 - [GoldHEN Team](https://github.com/GoldHEN) SPRX loader
+- [OhItsDiiTz](https://github.com/OhItsDiiTz) qt-creator lib
 - [OSM](https://twitter.com/LegendaryOSM) Core dump patch
 - [RS Glitching](https://www.youtube.com/@RSGLITCHING) Updating most of the kernel addresses to 11.00 and testing
 - [theorywrong](https://twitter.com/TheoryWrong) Original AFR
