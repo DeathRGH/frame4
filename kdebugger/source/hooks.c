@@ -603,7 +603,7 @@ __attribute__((naked)) void md_display_dump_hook() {
                 "shl rdx, 32 \n"
                 "or rax, rdx \n"
                 "sub rax, 0x1C0 \n"
-                "add rax, 0x236132 \n" // jump back addr
+                "add rax, 0x236132 \n" // jump back addr 
                 "jmp rax \n"
             );
             break;
@@ -651,6 +651,17 @@ __attribute__((naked)) void md_display_dump_hook() {
                 "jmp rax \n"
             );
             break;
+            case 1202:
+            __asm__ volatile (
+                "mov ecx, 0xC0000082 \n"
+                "rdmsr \n"
+                "shl rdx, 32 \n"
+                "or rax, rdx \n"
+                "sub rax, 0x1C0 \n"
+                "add rax, 0x16F783 \n" // jump back addr
+                "jmp rax \n"
+            );
+            break;
         default:
             break;
     }
@@ -692,6 +703,10 @@ int install_hooks() {
         case 1100:
             hook_trap_fatal_addr = 0x3C60FC;
             hook_md_display_dump_addr = 0x25F151;
+            break;
+        case 1202:
+            hook_trap_fatal_addr = 0x14AAAC;
+            hook_md_display_dump_addr = 0x16F771;
             break;
         default:
             break;

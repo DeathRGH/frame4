@@ -319,6 +319,66 @@ void patch_1100(uint64_t kernbase) {
     memcpy((void *)(kernbase + 0x15626A), "\x37\x41\xB2\x37", 4);
 }
 
+void patch_1202(uint64_t kernbase) {
+    // patch memcpy first
+    *(uint8_t *)(kernbase + 0x2BD48D) = 0xEB;
+
+    // patch sceSblACMgrIsAllowedSystemLevelDebugging
+    memcpy((void *)(kernbase + 0x3B2CD0), "\x31\xC0\xFF\xC0\xC3", 5);
+
+    // patch sceSblACMgrHasMmapSelfCapability
+    memcpy((void *)(kernbase + 0x3B2D40), "\x31\xC0\xFF\xC0\xC3", 5);
+
+    // patch sceSblACMgrIsAllowedToMmapSelf
+    memcpy((void *)(kernbase + 0x3B2D60), "\x31\xC0\xFF\xC0\xC3", 5);
+
+    // disable sysdump_perform_dump_on_fatal_trap
+    // will continue execution and give more information on crash, such as rip
+    *(uint8_t *)(kernbase + 0x76B7F0) = 0xC3;
+
+    // self patches
+    memcpy((void *)(kernbase + 0x1FC441), "\x31\xC0\x90\x90\x90", 5);
+
+    // patch vm_map_protect check
+    memcpy((void *)(kernbase + 0x2FC0EC), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch ptrace, thanks 2much4u
+    *(uint8_t *)(kernbase + 0x366985) = 0xEB;
+
+    // remove all these bullshit checks from ptrace, by golden
+    memcpy((void *)(kernbase + 0x366E71), "\xE9\x7C\x02\x00\x00", 5);
+
+    // patch ASLR, thanks 2much4u
+    *(uint16_t *)(kernbase + 0x477C54) = 0x9090;
+
+    // patch kmem_alloc
+    *(uint8_t *)(kernbase + 0x465AAC) = VM_PROT_ALL;
+    *(uint8_t *)(kernbase + 0x465AB4) = VM_PROT_ALL;
+
+    // patch kernel elf loading, thanks to DeathRGH
+    *(uint8_t *)(kernbase + 0x2FCA21) = 0xEB;
+
+    // patch copyin/copyout to allow userland + kernel addresses in both params
+    *(uint16_t *)(kernbase + 0x2BD6C7) = 0x9090;
+    memcpy((void *)(kernbase + 0x2BD6D3), "\x90\x90\x90", 3);
+    *(uint16_t *)(kernbase + 0x2BD5D2) = 0x9090;
+    memcpy((void *)(kernbase + 0x2BD5DE), "\x90\x90\x90", 3);
+
+    // patch copyinstr
+    *(uint16_t *)(kernbase + 0x2BDB73) = 0x9090;
+    *(uint16_t *)(kernbase + 0x2BDBB0) = 0x9090;
+    memcpy((void *)(kernbase + 0x2BDB7F), "\x90\x90\x90", 3);
+
+    // patch to remove vm_fault: fault on nofault entry, addr %llx
+    memcpy((void *)(kernbase + 0x1E20A6), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch 2mpage budget kernel panic after injecting an elf and quitting a newer game
+    memcpy((void *)(kernbase + 0x303B4E), "\x90\x90\x90\x90\x90\x90", 6);
+
+    // patch sys_virtual_query check for pages flagged as system
+    memcpy((void *)(kernbase + 0x1FC9B0), "\xE9\x81\x00\x00\x00", 5);
+}
+
 void patch_kernel() {
     uint64_t kernel_base = get_kernel_base();
 
@@ -339,6 +399,9 @@ void patch_kernel() {
             break;
         case 1100:
             patch_1100(kernel_base);
+            break;
+        case 1202:
+            patch_1202(kernel_base);
             break;
     }
 
@@ -428,6 +491,10 @@ int patch_shellcore() {
             //mountPatchOffset2 = 0x3210BC;
             fwCheckPatch = 0x3C41A7;
             disableCoreDumpPatch = 0x2ECF2B;
+            break;
+        case 1202:
+            fwCheckPatch = 0x3CA567;
+            disableCoreDumpPatch = 0x2F126B;
             break;
         default:
             break;
