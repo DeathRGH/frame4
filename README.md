@@ -45,6 +45,7 @@ Frame4 installs the following custom syscalls:
 - 7.02
 - 9.00
 - 11.00 (Please note 11.00 is barely tested, any feedback will help!)
+- 12.02 (Not tested)
 ###### If you are on 6.72 or 7.02, it is recommended to update to 9.00!
 
 ### Libs
@@ -132,7 +133,7 @@ If you want to contribute, feel free to make a pull request or open an issue.
 - [Dizz](https://twitter.com/DizzMods) Http server, updated ksdk, multi fw support
 - [Golden]() Original ps4debug
 - [GoldHEN Team](https://github.com/GoldHEN) SPRX loader
-- [OhItsDiiTz](https://github.com/OhItsDiiTz) qt-creator lib
+- [OhItsDiiTz](https://github.com/OhItsDiiTz) qt-creator lib, 12.02 port
 - [OSM](https://twitter.com/LegendaryOSM) Core dump patch
 - [RS Glitching](https://www.youtube.com/@RSGLITCHING) Updating most of the kernel addresses to 11.00 and testing
 - [theorywrong](https://twitter.com/TheoryWrong) Original AFR
