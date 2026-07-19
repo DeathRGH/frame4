@@ -112,7 +112,6 @@ Fatal trap 12: page fault while in kernel mode
 ### Backtrace Hooks
 Adds detailed info on the crash logs so you never have to calculate a module offset.
 ```
-...
 #
 # backtrace:
 # 0x0000000000BB7BF1 </data/default_mp.elf> + 0x7B7BF1
@@ -122,7 +121,6 @@ Adds detailed info on the crash logs so you never have to calculate a module off
 # 0x00000008000075C2 </i8fsuSWSEf/common/lib/libkernel.sprx> + 0x75C2
 # 0x0000000000000000
 #
-...
 ```
 
 ### Contributing
