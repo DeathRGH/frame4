@@ -100,6 +100,7 @@ int sys_proc_vm_map_handle(struct proc *p, struct sys_proc_vm_map_args *args) {
         args->num = map->nentries + 1; // +1 to add a empty section for backwards compatibility
     }
     else {
+        memset(args->maps, 0, sizeof(*args->maps) * args->num);
         entry = map->header.next;
 
         for (int i = 1; i < args->num && entry != &map->header; i++) { // i = 1 for backwards compatibility
